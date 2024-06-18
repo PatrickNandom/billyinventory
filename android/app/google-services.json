@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "921598256200",
+    "project_id": "billyinventory-5dda3",
+    "storage_bucket": "billyinventory-5dda3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:921598256200:android:03a7c7103f6e2dc2ebe47d",
+        "android_client_info": {
+          "package_name": "com.example.billyinventory"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "921598256200-pp41sdnpqoegv5kd4s2i6iva5291h4vn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA0A9eUcVK_BtxjAng7ObGxUZx6tvqPjfw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "921598256200-pp41sdnpqoegv5kd4s2i6iva5291h4vn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
