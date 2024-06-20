@@ -2,17 +2,15 @@ import 'dart:typed_data';
 
 import 'package:billyinventory/common_widgets/my_custom_appbar.dart';
 import 'package:billyinventory/common_widgets/my_custom_button.dart';
-import 'package:billyinventory/models/products_model.dart';
 import 'package:billyinventory/screens/admin_screen/admin_widgets/admin_custom_text_input.dart';
+import 'package:billyinventory/screens/admin_screen/admin_widgets/admin_text_input_style.dart';
 import 'package:billyinventory/services/firestore_services.dart';
-import 'package:billyinventory/services/storage_service.dart';
 import 'package:billyinventory/utils/colors.dart';
 import 'package:billyinventory/utils/show_progress_indicator.dart';
 import 'package:billyinventory/utils/snachbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:uuid/uuid.dart';
 
 class AddProductScreen extends StatefulWidget {
   const AddProductScreen({super.key});
@@ -57,14 +55,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
   }
 
   Future<void> addProduct() async {
-    if (_productImage == null) {
-      showSnackBar(context, 'Please select an image');
-      return;
-    }
-
-    String productId = Uuid().v4();
-    String imagePath = 'products/$productId';
-
     try {
       showProgressIndicator(context);
 
@@ -74,33 +64,33 @@ class _AddProductScreenState extends State<AddProductScreen> {
           productSellingPriceController.text.isEmpty ||
           productQuantityController.text.isEmpty ||
           producCategoryController.text.isEmpty ||
-          productDescriptionController.text.isEmpty ||
-          _productImage == null) {
+          productDescriptionController.text.isEmpty) {
         Navigator.pop(context);
         showSnackBar(context, 'Please fill in all fields and upload an image.');
-
         return;
       }
 
-      String imageUrl =
-          await FirebaseStorageService().uploadImage(_productImage!, imagePath);
-      Product product = Product(
-        productId: productId,
-        productName: productNameController.text,
-        productImage: imageUrl,
-        description: productDescriptionController.text,
-        category: producCategoryController.text,
-        costPrice: double.parse(productCostPriceController.text),
-        sellingPrice: double.parse(productSellingPriceController.text),
-        quantity: int.parse(productQuantityController.text),
-        createdAt: DateTime.now(),
+      if (_productImage == null || _productImage!.isEmpty) {
+        Navigator.pop(context);
+        showSnackBar(context, 'Please select an image.');
+        return;
+      }
+      await FirestoreService().addProduct(
+        productKeyController.text,
+        productNameController.text,
+        _productImage!,
+        productDescriptionController.text,
+        producCategoryController.text,
+        double.parse(productCostPriceController.text),
+        double.parse(productSellingPriceController.text),
+        int.parse(productQuantityController.text),
       );
-      await FirestoreService().addProduct(product);
       Navigator.pop(context);
       showSnackBar(context, 'Product details saved successfully');
     } catch (e) {
       print('Error picking image: $e');
-      showSnackBar(context, e.toString());
+      Navigator.pop(context);
+      showSnackBar(context, 'Custom Error ${e.toString()}');
     }
   }
 
@@ -108,23 +98,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
   @override
   Widget build(BuildContext context) {
-    ////////////////////////////////////////////
-
-    // decoration for textinput description
-
-    final OutlineInputBorder inputBorder = OutlineInputBorder(
-      borderRadius: const BorderRadius.all(
-        Radius.circular(15),
-      ),
-      borderSide: BorderSide(
-        color: borderBlueColor,
-        width: 2.0,
-      ),
-    );
-
-    // end decoration for textinput description
-
-    /////////////////////////////////////////////
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: adminBackgroundColor,
@@ -192,10 +165,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
                                   style: TextStyle(color: borderBlueColor),
                                 ),
                               ),
-                        //   fit: BoxFit.cover,
-                        //   width: double.infinity,
-                        //   height: double.infinity,
-                        // ),
                       ),
                     );
                   },
