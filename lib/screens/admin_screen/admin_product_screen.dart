@@ -1,7 +1,7 @@
 
 import 'package:billyinventory/screens/admin_screen/admin_widgets/admin_blue_container.dart';
-import 'package:billyinventory/screens/admin_screen/admin_widgets/admin_custom_button_for_all.dart';
-import 'package:billyinventory/screens/admin_screen/admin_widgets/custom_appbar.dart';
+import 'package:billyinventory/screens/admin_screen/admin_widgets/admin_custom_button.dart';
+import 'package:billyinventory/common_widgets/my_custom_appbar.dart';
 import 'package:billyinventory/utils/colors.dart';
 import 'package:flutter/material.dart';
 

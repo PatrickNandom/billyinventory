@@ -1,7 +1,6 @@
-
-import 'package:billyinventory/screens/admin_screen/admin_widgets/admin_custom_button_for_all.dart';
+import 'package:billyinventory/screens/admin_screen/admin_widgets/admin_custom_button.dart';
 import 'package:billyinventory/screens/admin_screen/admin_widgets/admin_grey_container.dart';
-import 'package:billyinventory/screens/admin_screen/admin_widgets/custom_appbar.dart';
+import 'package:billyinventory/common_widgets/my_custom_appbar.dart';
 import 'package:billyinventory/utils/colors.dart';
 import 'package:flutter/material.dart';
 
@@ -82,8 +81,8 @@ class AdminDashboard extends StatelessWidget {
                 ),
                 const AdmingreyContainer(
                   topIconPath: 'assets/addmin_shopping_cart_icon.svg',
-                  containerTitle: 'Total Stores',
-                  rightContainerTile: '100',
+                  containerTitle: 'Total Sales',
+                  rightContainerTile: 'N20,000',
                   rightContainerIconPath:
                       'assets/right_container_arrow_icon.svg',
                   rigtContainerPercentage: '70%',

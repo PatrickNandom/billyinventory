@@ -90,8 +90,8 @@ class AdmingreyContainer extends StatelessWidget {
                     Text(
                       rightContainerTile,
                       style: const TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w700,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                     Container(

@@ -25,6 +25,8 @@ class AuthService {
         password: password,
       );
 
+      print(userCredential);
+
       model.User user = model.User(
         uid: userCredential.user!.uid,
         name: name,

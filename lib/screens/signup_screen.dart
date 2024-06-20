@@ -1,7 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:billyinventory/common_widgets/my_button.dart';
-import 'package:billyinventory/common_widgets/text_field_input.dart';
+import 'package:billyinventory/common_widgets/my_custom_button.dart';
+import 'package:billyinventory/common_widgets/my_custom_text_field_input.dart';
 import 'package:billyinventory/screens/dashboard.dart';
 import 'package:billyinventory/utils/colors.dart';
 import 'package:billyinventory/utils/show_progress_indicator.dart';
@@ -85,7 +85,6 @@ class _SignUpState extends State<SignUp> {
       showProgressIndicator(context);
       var user = await _authService.signInWithGoogle();
       if (user != null) {
-      
         Navigator.pop(context);
         Navigator.pushReplacement(
           context,
@@ -102,180 +101,182 @@ class _SignUpState extends State<SignUp> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: SafeArea(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SvgPicture.asset(
-                'assets/app_icon.svg',
-                width: 100,
-                height: 100,
-              ),
-              Padding(
-                padding: const EdgeInsets.all(30),
-                child: Container(
-                  width: MediaQuery.of(context).size.width,
-                  decoration: BoxDecoration(
-                    color: backgroundColor,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  padding: const EdgeInsets.only(
-                    left: 20,
-                    top: 40,
-                    right: 20,
-                    bottom: 40,
-                  ),
-                  child: Column(
-                    children: [
-                      const Text(
-                        'Create an account',
-                        style: TextStyle(
-                          fontSize: 25,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                      ),
-                      const Text(
-                        'Enter your details to signup for this app',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      TextFieldInput(
-                        textEditingController: _nameController,
-                        hintText: 'Name:',
-                        isPass: false,
-                        textInputType: TextInputType.text,
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      TextFieldInput(
-                        textEditingController: _emailController,
-                        hintText: 'Email:',
-                        isPass: false,
-                        textInputType: TextInputType.emailAddress,
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      TextFieldInput(
-                        textEditingController: _passwordController,
-                        hintText: 'Password:',
-                        isPass: true,
-                        textInputType: TextInputType.text,
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      TextFieldInput(
-                        textEditingController: _confirmPasswordController,
-                        hintText: 'Confirm Password:',
-                        isPass: true,
-                        textInputType: TextInputType.text,
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      CustomButton(
-                        backgroundColor: appColor,
-                        borderColor: whiteColor,
-                        text: 'SignUp',
-                        textColor: whiteColor,
-                        function: _signUp,
-                        boderWidth: 1,
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      const Text(
-                        '-------------or continue with----------------',
-                        style: TextStyle(
-                          fontWeight: FontWeight.normal,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      GestureDetector(
-                        onTap: _signInWithGoogle,
-                        child: Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(10.0),
-                          decoration: BoxDecoration(
-                            color: whiteColor,
-                            borderRadius: BorderRadius.circular(10.0),
+      body: SingleChildScrollView(
+        child: SafeArea(
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SvgPicture.asset(
+                  'assets/app_icon.svg',
+                  width: 100,
+                  height: 100,
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(30),
+                  child: Container(
+                    width: MediaQuery.of(context).size.width,
+                    decoration: BoxDecoration(
+                      color: backgroundColor,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    padding: const EdgeInsets.only(
+                      left: 20,
+                      top: 40,
+                      right: 20,
+                      bottom: 40,
+                    ),
+                    child: Column(
+                      children: [
+                        const Text(
+                          'Create an account',
+                          style: TextStyle(
+                            fontSize: 25,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
                           ),
-                          child: Row(
-                            children: [
-                              SvgPicture.asset(
-                                'assets/Google.svg',
-                                width: 20,
-                                height: 20,
-                              ),
+                        ),
+                        const Text(
+                          'Enter your details to signup for this app',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        TextFieldInput(
+                          textEditingController: _nameController,
+                          hintText: 'Name:',
+                          isPass: false,
+                          textInputType: TextInputType.text,
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        TextFieldInput(
+                          textEditingController: _emailController,
+                          hintText: 'Email:',
+                          isPass: false,
+                          textInputType: TextInputType.emailAddress,
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        TextFieldInput(
+                          textEditingController: _passwordController,
+                          hintText: 'Password:',
+                          isPass: true,
+                          textInputType: TextInputType.text,
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        TextFieldInput(
+                          textEditingController: _confirmPasswordController,
+                          hintText: 'Confirm Password:',
+                          isPass: true,
+                          textInputType: TextInputType.text,
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        CustomButton(
+                          backgroundColor: appColor,
+                          borderColor: whiteColor,
+                          text: 'SignUp',
+                          textColor: whiteColor,
+                          function: _signUp,
+                          boderWidth: 1,
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        const Text(
+                          '-------------or continue with----------------',
+                          style: TextStyle(
+                            fontWeight: FontWeight.normal,
+                            color: Colors.grey,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        GestureDetector(
+                          onTap: _signInWithGoogle,
+                          child: Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(10.0),
+                            decoration: BoxDecoration(
+                              color: whiteColor,
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            child: Row(
+                              children: [
+                                SvgPicture.asset(
+                                  'assets/Google.svg',
+                                  width: 20,
+                                  height: 20,
+                                ),
 
-                              // const SizedBox(
-                              //   width: 100,
-                              // ),
-                              const Expanded(
-                                child: Center(
-                                  child: Text(
-                                    'Google',
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,
+                                // const SizedBox(
+                                //   width: 100,
+                                // ),
+                                const Expanded(
+                                  child: Center(
+                                    child: Text(
+                                      'Google',
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black,
+                                      ),
                                     ),
                                   ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        const Text(
+                          'By clicking continue, you agree to our ',
+                          style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.grey),
+                        ),
+                        RichText(
+                          text: const TextSpan(
+                            children: [
+                              TextSpan(
+                                  text: 'Terms of Service ',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  )),
+                              TextSpan(
+                                  text: 'and ',
+                                  style: TextStyle(color: Colors.grey)),
+                              TextSpan(
+                                text: 'Privacy Policy',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
                                 ),
                               ),
                             ],
                           ),
                         ),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      const Text(
-                        'By clicking continue, you agree to our ',
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.grey),
-                      ),
-                      RichText(
-                        text: const TextSpan(
-                          children: [
-                            TextSpan(
-                                text: 'Terms of Service ',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
-                                )),
-                            TextSpan(
-                                text: 'and ',
-                                style: TextStyle(color: Colors.grey)),
-                            TextSpan(
-                              text: 'Privacy Policy',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

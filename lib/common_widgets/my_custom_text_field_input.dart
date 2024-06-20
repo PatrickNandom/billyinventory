@@ -25,22 +25,25 @@ class TextFieldInput extends StatelessWidget {
       ),
     );
 
-    return TextField(
-      controller: textEditingController,
-      decoration: InputDecoration(
-        hintText: hintText,
-        border: inputBorder,
-        focusedBorder: inputBorder,
-        enabledBorder: inputBorder,
-        filled: true,
-        fillColor: Colors.white, // White background color
-        contentPadding: const EdgeInsets.symmetric(
-          vertical: 0.0,
-          horizontal:15.0,
+    return SizedBox(
+      height: 30.0,
+      child: TextField(
+        controller: textEditingController,
+        decoration: InputDecoration(
+          hintText: hintText,
+          border: inputBorder,
+          focusedBorder: inputBorder,
+          enabledBorder: inputBorder,
+          filled: true,
+          fillColor: Colors.white, // White background color
+          contentPadding: const EdgeInsets.symmetric(
+            vertical: 0.0,
+            horizontal: 15.0,
+          ),
         ),
+        keyboardType: textInputType,
+        obscureText: isPass,
       ),
-      keyboardType: textInputType,
-      obscureText: isPass,
     );
   }
 }

@@ -1,6 +1,6 @@
 
-import 'package:billyinventory/common_widgets/custom_search_bar.dart';
-import 'package:billyinventory/screens/admin_screen/admin_widgets/custom_appbar.dart';
+import 'package:billyinventory/common_widgets/my_custom_search_bar.dart';
+import 'package:billyinventory/common_widgets/my_custom_appbar.dart';
 import 'package:billyinventory/screens/login_screen.dart';
 import 'package:billyinventory/utils/colors.dart';
 import 'package:flutter/material.dart';

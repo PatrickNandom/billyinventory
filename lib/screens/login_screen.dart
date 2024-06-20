@@ -1,7 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:billyinventory/common_widgets/my_button.dart';
-import 'package:billyinventory/common_widgets/text_field_input.dart';
+import 'package:billyinventory/common_widgets/my_custom_button.dart';
+import 'package:billyinventory/common_widgets/my_custom_text_field_input.dart';
 import 'package:billyinventory/models/user_model.dart';
 import 'package:billyinventory/screens/dashboard.dart';
 import 'package:billyinventory/screens/signup_screen.dart';

@@ -1,4 +1,4 @@
-import 'package:billyinventory/screens/admin_screen/admin_widgets/custom_button_with_arrow.dart';
+import 'package:billyinventory/screens/admin_screen/admin_widgets/admin_custom_button_with_arrow.dart';
 import 'package:billyinventory/utils/colors.dart';
 import 'package:flutter/material.dart';
 

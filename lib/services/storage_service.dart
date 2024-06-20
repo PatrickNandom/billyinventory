@@ -1,22 +1,21 @@
-// import 'dart:io';
+import 'dart:typed_data';
+import 'package:firebase_storage/firebase_storage.dart';
 
-// import 'package:firebase_storage/firebase_storage.dart';
+class FirebaseStorageService {
+  final FirebaseStorage _storage = FirebaseStorage.instance;
 
-// Future<String> uploadImage(File imageFile, String imageName) async {
-//   try {
-//     // Generate a unique file name for the image
-//     final String fileName = DateTime.now().millisecondsSinceEpoch.toString();
-//     // final Reference storageRef = storage.ref().child(imageName).child(fileName);
+  Future<String> uploadImage(Uint8List file, String path) async {
+    try {
+      Reference ref = _storage.ref().child(path);
+      UploadTask uploadTask = ref.putData(file);
+      TaskSnapshot snapshot = await uploadTask;
+      return await snapshot.ref.getDownloadURL();
+    } catch (e) {
+      throw Exception('Error uploading image: $e');
+    }
+  }
+}
 
-//     // Upload the image file to Firebase Storage
-//     await storageRef.putFile(imageFile);
 
-//     // Get the download URL of the uploaded image
-//     final String downloadURL = await storageRef.getDownloadURL();
 
-//     return downloadURL;
-//   } catch (e) {
-//     print('Error uploading image: $e');
-//     return '';
-//   }
-// }
+

@@ -17,3 +17,4 @@ const Color semiTransparentBlue = Color(0xFF0D3F90);
 const Color semiTransparentDarkBlue = Color.fromARGB(255, 3, 57, 102);
 
 const Color greyContainerBackground = Color.fromARGB(218, 241, 239, 239);
+const Color borderBlueColor = Color(0xFF0D3F90);
