@@ -1,4 +1,4 @@
-
+import 'package:billyinventory/common_widgets/my_custom_drawer.dart';
 import 'package:billyinventory/common_widgets/my_custom_search_bar.dart';
 import 'package:billyinventory/common_widgets/my_custom_appbar.dart';
 import 'package:billyinventory/screens/login_screen.dart';
@@ -16,9 +16,13 @@ class _EmeployeeDashboardState extends State<EmeployeeDashboard> {
   final searchEditingController = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    void displayDrawer() {}
+    Widget displayDrawer() {
+      return appDrawer();
+    }
+
     return Scaffold(
       appBar: myCustomAppbar(displayDrawer),
+      drawer: appDrawer(),
       body: SingleChildScrollView(
         child: SafeArea(
           child: Padding(
@@ -37,7 +41,7 @@ class _EmeployeeDashboardState extends State<EmeployeeDashboard> {
                     searchContainerBorderColor: appColor,
                   ),
                 ),
-                 const SizedBox(
+                const SizedBox(
                   height: 15,
                 ),
                 const Text('Welcome to employee Dashoard'),

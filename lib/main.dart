@@ -1,5 +1,9 @@
 import 'package:billyinventory/firebase_options.dart';
+import 'package:billyinventory/screens/admin_screen/admin_add_product_screen.dart';
+import 'package:billyinventory/screens/admin_screen/admin_product_preview_screen.dart';
+import 'package:billyinventory/screens/admin_screen/admin_product_screen.dart';
 import 'package:billyinventory/screens/login_screen.dart';
+import 'package:billyinventory/screens/signup_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -16,9 +20,16 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Login(),
+      // home: AdminStorScreen(),
+      routes: {
+        '/': (context) => Login(),
+        '/signup': (context) => SignUp(),
+        '/productpreview': (context) => ProductPreviewScreen(),
+        '/adminaddproductscreen': (context) => AddProductScreen(),
+        '/adminproductscreen': (context) => ProductScreen(),
+      },
     );
   }
 }

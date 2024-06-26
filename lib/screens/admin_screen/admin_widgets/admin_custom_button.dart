@@ -53,7 +53,7 @@ class CustomButtonGlobal extends StatelessWidget {
                 child: widgetName,
               ),
               const SizedBox(
-                width: 6,
+                width: 15,
               ),
               Text(
                 name,

@@ -4,7 +4,6 @@ import 'package:billyinventory/common_widgets/my_custom_appbar.dart';
 import 'package:billyinventory/common_widgets/my_custom_button.dart';
 import 'package:billyinventory/screens/admin_screen/admin_widgets/admin_custom_text_input.dart';
 import 'package:billyinventory/screens/admin_screen/admin_widgets/admin_text_input_style.dart';
-import 'package:billyinventory/services/firestore_services.dart';
 import 'package:billyinventory/utils/colors.dart';
 import 'package:billyinventory/utils/show_progress_indicator.dart';
 import 'package:billyinventory/utils/snachbar.dart';
@@ -54,44 +53,41 @@ class _AddProductScreenState extends State<AddProductScreen> {
     }
   }
 
-  Future<void> addProduct() async {
-    try {
-      showProgressIndicator(context);
+  void validation() {
+    showProgressIndicator(context);
 
-      if (productKeyController.text.isEmpty ||
-          productNameController.text.isEmpty ||
-          productCostPriceController.text.isEmpty ||
-          productSellingPriceController.text.isEmpty ||
-          productQuantityController.text.isEmpty ||
-          producCategoryController.text.isEmpty ||
-          productDescriptionController.text.isEmpty) {
-        Navigator.pop(context);
-        showSnackBar(context, 'Please fill in all fields and upload an image.');
-        return;
-      }
-
-      if (_productImage == null || _productImage!.isEmpty) {
-        Navigator.pop(context);
-        showSnackBar(context, 'Please select an image.');
-        return;
-      }
-      await FirestoreService().addProduct(
-        productKeyController.text,
-        productNameController.text,
-        _productImage!,
-        productDescriptionController.text,
-        producCategoryController.text,
-        double.parse(productCostPriceController.text),
-        double.parse(productSellingPriceController.text),
-        int.parse(productQuantityController.text),
-      );
+    if (productKeyController.text.isEmpty ||
+        productNameController.text.isEmpty ||
+        productCostPriceController.text.isEmpty ||
+        productSellingPriceController.text.isEmpty ||
+        productQuantityController.text.isEmpty ||
+        producCategoryController.text.isEmpty ||
+        productDescriptionController.text.isEmpty) {
       Navigator.pop(context);
-      showSnackBar(context, 'Product details saved successfully');
-    } catch (e) {
-      print('Error picking image: $e');
-      Navigator.pop(context);
-      showSnackBar(context, 'Custom Error ${e.toString()}');
+      showSnackBar(context, 'Please fill in all fields and upload an image.');
+      return;
     }
+
+    if (_productImage == null || _productImage!.isEmpty) {
+      Navigator.pop(context);
+      showSnackBar(context, 'Please select an image.');
+      return;
+    }
+
+    Navigator.pushReplacementNamed(
+      context,
+      '/productpreview',
+      arguments: {
+        'productKey': productKeyController.text,
+        'productName': productNameController.text,
+        'productImage': _productImage!,
+        'productDescription': productDescriptionController.text,
+        'productCategory': producCategoryController.text,
+        'productCostPrice': double.parse(productCostPriceController.text),
+        'productSellingPrice': double.parse(productSellingPriceController.text),
+        'productQuantity': int.parse(productQuantityController.text),
+      },
+    );
   }
 
   void displayDrawer() {}
@@ -376,7 +372,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     const SizedBox(height: 25.0),
                     Center(
                       child: CustomButton(
-                        function: addProduct,
+                        function: validation,
                         backgroundColor: Colors.transparent,
                         borderColor: myGreenColor,
                         text: 'Next',

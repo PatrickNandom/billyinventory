@@ -106,7 +106,11 @@ class _SignUpState extends State<SignUp> {
           child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                SizedBox(
+                  height: 100.0,
+                ),
                 SvgPicture.asset(
                   'assets/app_icon.svg',
                   width: 100,

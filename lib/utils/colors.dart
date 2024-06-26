@@ -13,6 +13,8 @@ const Color adminBackgroundColor = Color.fromARGB(255, 219, 217, 217);
 const Color myGreenColor = Color(0xFF10CA0C);
 const Color lightPurpleGrayColor = Color(0xFFD9CDDB);
 const Color lightGrayColor = Color(0xFFDADADA);
+const Color myLightGrayColor = Color.fromARGB(255, 243, 242, 242);
+
 const Color semiTransparentBlue = Color(0xFF0D3F90);
 const Color semiTransparentDarkBlue = Color.fromARGB(255, 3, 57, 102);
 

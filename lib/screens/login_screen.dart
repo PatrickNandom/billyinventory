@@ -52,7 +52,7 @@ class _LoginState extends State<Login> {
         context,
         MaterialPageRoute(builder: (context) => DashboardPage(user: user)),
       );
-        } catch (e) {
+    } catch (e) {
       Navigator.pop(context);
       showSnackBar(context, e.toString());
     }

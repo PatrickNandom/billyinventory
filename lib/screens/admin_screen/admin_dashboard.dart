@@ -1,4 +1,3 @@
-import 'package:billyinventory/screens/admin_screen/admin_product_screen.dart';
 import 'package:billyinventory/screens/admin_screen/admin_widgets/admin_custom_button.dart';
 import 'package:billyinventory/screens/admin_screen/admin_widgets/admin_grey_container.dart';
 import 'package:billyinventory/common_widgets/my_custom_appbar.dart';
@@ -34,11 +33,8 @@ class AdminDashboard extends StatelessWidget {
                     ),
                     CustomButtonGlobal(
                       function: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => const ProductScreen(),
-                          ),
-                        );
+                        Navigator.of(context)
+                            .pushReplacementNamed('/adminproductscreen');
                       },
                       width: 95,
                       height: 45,

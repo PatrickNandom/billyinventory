@@ -13,7 +13,11 @@ AppBar myCustomAppbar(Function()? function) {
           child: SizedBox(
             width: 24,
             height: 24,
-            child: SvgPicture.asset('assets/admin_menu.svg'),
+            child: SvgPicture.asset(
+              // ignore: deprecated_member_use
+              color: Colors.transparent,
+              'assets/admin_menu.svg',
+            ),
           ),
         ),
         const Text(

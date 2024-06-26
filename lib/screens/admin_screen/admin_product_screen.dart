@@ -1,4 +1,3 @@
-import 'package:billyinventory/screens/admin_screen/admin_add_product_screen.dart';
 import 'package:billyinventory/screens/admin_screen/admin_widgets/admin_blue_container.dart';
 import 'package:billyinventory/screens/admin_screen/admin_widgets/admin_custom_button.dart';
 import 'package:billyinventory/common_widgets/my_custom_appbar.dart';
@@ -40,11 +39,8 @@ class _ProductScreenState extends State<ProductScreen> {
                     ),
                     CustomButtonGlobal(
                       function: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => const AddProductScreen(),
-                          ),
-                        );
+                        Navigator.of(context)
+                            .pushReplacementNamed('/adminaddproductscreen');
                       },
                       name: 'Add Products',
                       width: 174,
