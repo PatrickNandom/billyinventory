@@ -43,12 +43,11 @@ class CustomSearchBar extends StatelessWidget {
           child: TextField(
             controller: controller,
             decoration: const InputDecoration(
-              
               hintText: 'Search',
               hintStyle: TextStyle(color: Colors.black),
               border: InputBorder.none,
               contentPadding:
-                  EdgeInsets.symmetric(vertical: 8.0, horizontal: 15.0),
+                  EdgeInsets.symmetric(vertical: 6.0, horizontal: 15.0),
               suffixIcon: Icon(Icons.search, color: Colors.black),
             ),
           ),

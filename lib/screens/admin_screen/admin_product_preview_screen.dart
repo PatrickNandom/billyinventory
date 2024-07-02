@@ -459,7 +459,7 @@ class _ProductPreviewScreenState extends State<ProductPreviewScreen> {
                             'Product Information',
                             style: TextStyle(
                               color: Colors.black,
-                              fontSize: 20.0,
+                              fontSize: 12.0,
                               fontWeight: FontWeight.w600,
                             ),
                           ),

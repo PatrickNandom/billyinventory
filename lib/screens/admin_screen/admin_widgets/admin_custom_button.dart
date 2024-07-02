@@ -7,6 +7,7 @@ class CustomButtonGlobal extends StatelessWidget {
   final double height;
   final String name;
   final Widget widgetName;
+  final Color btnTextColor;
 
   const CustomButtonGlobal({
     super.key,
@@ -15,6 +16,7 @@ class CustomButtonGlobal extends StatelessWidget {
     required this.height,
     required this.name,
     required this.widgetName,
+    this.btnTextColor = whiteColor,
   });
 
   @override
@@ -57,8 +59,8 @@ class CustomButtonGlobal extends StatelessWidget {
               ),
               Text(
                 name,
-                style: const TextStyle(
-                  color: whiteColor,
+                style: TextStyle(
+                  color: btnTextColor,
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),

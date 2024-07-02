@@ -2,6 +2,8 @@ import 'package:billyinventory/firebase_options.dart';
 import 'package:billyinventory/screens/admin_screen/admin_add_product_screen.dart';
 import 'package:billyinventory/screens/admin_screen/admin_product_preview_screen.dart';
 import 'package:billyinventory/screens/admin_screen/admin_product_screen.dart';
+import 'package:billyinventory/screens/employee_screen/employee_card_screen.dart';
+import 'package:billyinventory/screens/employee_screen/employee_dashboard.dart';
 import 'package:billyinventory/screens/login_screen.dart';
 import 'package:billyinventory/screens/signup_screen.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +28,8 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => Login(),
         '/signup': (context) => SignUp(),
+        '/emplyeecardscreen': (context) => EmployeeCardScreen(),
+        '/emplyeedashboard': (context) => EmeployeeDashboard(),
         '/productpreview': (context) => ProductPreviewScreen(),
         '/adminaddproductscreen': (context) => AddProductScreen(),
         '/adminproductscreen': (context) => ProductScreen(),
