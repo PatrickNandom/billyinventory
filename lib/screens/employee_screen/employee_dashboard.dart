@@ -106,7 +106,12 @@ class _EmeployeeDashboardState extends State<EmeployeeDashboard> {
                   //     .snapshots(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(child: CircularProgressIndicator());
+                      return Center(
+                          child: CircularProgressIndicator(
+                        backgroundColor: backgroundColor,
+                        color: appColor,
+                      ));
+                      // return showProgressIndicator(context);
                     }
                     if (snapshot.hasError) {
                       return Center(child: Text('Error: ${snapshot.error}'));
