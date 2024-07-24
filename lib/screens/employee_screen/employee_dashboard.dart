@@ -1,6 +1,5 @@
-import 'package:billyinventory/common_widgets/my_custom_drawer.dart';
-import 'package:billyinventory/common_widgets/my_custom_appbar.dart';
 import 'package:billyinventory/common_widgets/my_custom_search_bar.dart';
+import 'package:billyinventory/screens/employee_screen/employee_profile_screen.dart';
 import 'package:billyinventory/screens/employee_screen/emplyee_widgets/employee_product_card.dart';
 import 'package:billyinventory/utils/colors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -18,8 +17,55 @@ class _EmeployeeDashboardState extends State<EmeployeeDashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: myCustomAppbar(() {}),
-      drawer: appDrawer(),
+      appBar: AppBar(
+        backgroundColor: adminBackgroundColor,
+        title: Row(
+          children: [
+            Spacer(
+              flex: 1,
+            ),
+            Text(
+              'Billy Inventory',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 25,
+                color: appColor,
+              ),
+            ),
+            Spacer(
+              flex: 1,
+            ),
+            GestureDetector(
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const EmployeeSettingsScreen(),
+                  ),
+                );
+              },
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: whiteColor,
+                  border: Border.all(
+                    width: 2,
+                    color: appColor,
+                  ),
+                  shape: BoxShape.circle,
+                ),
+                child: ClipOval(
+                  child: Image.network(
+                    'https://unsplash.com/photos/a-bedroom-with-two-beds-and-a-chandelier-LDNMoidhgow',
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+      drawer: Drawer(),
       floatingActionButton: GestureDetector(
         onTap: () {
           Navigator.of(context).pushReplacementNamed('/emplyeecardscreen');
@@ -278,19 +324,6 @@ class _EmeployeeDashboardState extends State<EmeployeeDashboard> {
                       ),
                     );
                   },
-                ),
-              ),
-              SizedBox(
-                height: 20.0,
-              ),
-              Container(
-                margin: EdgeInsets.only(left: 20.0),
-                child: Text(
-                  'Other Category Products',
-                  style: TextStyle(
-                    fontSize: 15.0,
-                    fontWeight: FontWeight.w700,
-                  ),
                 ),
               ),
             ],

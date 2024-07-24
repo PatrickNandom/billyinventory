@@ -1,10 +1,18 @@
+import 'dart:typed_data';
 
 import 'package:billyinventory/screens/employee_screen/employee_dashboard.dart';
+import 'package:billyinventory/screens/employee_screen/emplyee_widgets/employee_custom_button.dart';
 import 'package:billyinventory/screens/employee_screen/emplyee_widgets/employee_text_input.dart';
-import 'package:billyinventory/screens/employee_screen/emplyee_widgets/emplyee_container.dart';
+import 'package:billyinventory/services/storage_service.dart';
 import 'package:billyinventory/utils/colors.dart';
+import 'package:billyinventory/utils/show_progress_indicator.dart';
+import 'package:billyinventory/utils/snachbar.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:uuid/uuid.dart';
 
 class EmployeeSettingsScreen extends StatefulWidget {
   const EmployeeSettingsScreen({super.key});
@@ -16,11 +24,12 @@ class EmployeeSettingsScreen extends StatefulWidget {
 class _EmployeeSettingsScreenState extends State<EmployeeSettingsScreen> {
   // Text editing controllers
   final _nameController = TextEditingController();
-  final _devNameController = TextEditingController();
+  final _confirmNameController = TextEditingController();
   final _emailController = TextEditingController();
   final _confirmEmailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  Uint8List? _profileImage;
 
   //dispose functions
 
@@ -28,25 +37,152 @@ class _EmployeeSettingsScreenState extends State<EmployeeSettingsScreen> {
   void dispose() {
     super.dispose();
     _nameController.dispose();
-    _devNameController.dispose();
+    _confirmNameController.dispose();
     _emailController.dispose();
     _confirmEmailController.dispose();
     _passwordController.dispose();
     _confirmEmailController.dispose();
   }
 
+//image picker function
+  Future<void> selectImage() async {
+    final picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+
+    if (image != null) {
+      final Uint8List imageData = await image.readAsBytes();
+      setState(() {
+        _profileImage = imageData;
+      });
+    }
+  }
+
+// function to update name
+  Future<void> _updateName() async {
+    showProgressIndicator(context);
+    if (_nameController.text.isEmpty || _confirmNameController.text.isEmpty) {
+      Navigator.pop(context);
+      showSnackBar(context, 'Inputs cannot be empty');
+      return;
+    } else if (_nameController.text != _confirmNameController.text) {
+      Navigator.pop(context);
+      showSnackBar(context, 'Inputs supplied do not match!');
+      return;
+    }
+
+    try {
+      await FirebaseAuth.instance.currentUser!
+          .updateDisplayName(_nameController.text);
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .update({'name': _nameController.text});
+      Navigator.pop(context);
+      showSnackBar(context, 'Name updated successfully');
+    } catch (e) {
+      Navigator.pop(context);
+      showSnackBar(context, e.toString());
+    }
+  }
+
+//function for user to change his email address
+  Future<void> _updateEmail() async {
+    showProgressIndicator(context);
+    if (_emailController.text.isEmpty || _confirmEmailController.text.isEmpty) {
+      Navigator.pop(context);
+      print(_emailController.text);
+      showSnackBar(context, 'Inputs cannot be empty!');
+      return;
+    } else if (_emailController.text != _confirmEmailController.text) {
+      Navigator.pop(context);
+      showSnackBar(context, 'Email supplied do not match');
+      return;
+    }
+    try {
+      await FirebaseAuth.instance.currentUser!
+          // ignore: deprecated_member_use
+          .updateEmail(_emailController.text);
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .update({'email': _emailController.text});
+      Navigator.pop(context);
+      showSnackBar(context, 'Email updated successfully');
+    } catch (e) {
+      Navigator.pop(context);
+      showSnackBar(context, e.toString());
+    }
+  }
+
+  // change password function
+  Future<void> _updatePassword() async {
+    showProgressIndicator(context);
+    if (_passwordController.text.isEmpty ||
+        _confirmPasswordController.text.isEmpty) {
+      Navigator.pop(context);
+      showSnackBar(context, 'Fill the input fields');
+      return;
+    } else if (_passwordController.text != _confirmPasswordController.text) {
+      Navigator.pop(context);
+      showSnackBar(context, 'Passwords do not match!');
+      return;
+    }
+
+
+    try {
+      await FirebaseAuth.instance.currentUser!
+          .updatePassword(_passwordController.text);
+      Navigator.pop(context);
+      showSnackBar(context, 'Password updated successfully');
+    } catch (e) {
+      showSnackBar(context, e.toString());
+    }
+  }
+
+  //upload a profile photo function
+  Future<void> _uploadPicure() async {
+    showProgressIndicator(context);
+    if (_profileImage == null) {
+      Navigator.pop(context);
+      showSnackBar(context, 'Please select an image.');
+      return;
+    } else {
+      try {
+        String imageId = Uuid().v4();
+        String imagePath = 'UserProfileImage/$imageId';
+        String imageUrl = await FirebaseStorageService()
+            .uploadImage(_profileImage!, 'User Image $imagePath');
+
+        FirebaseFirestore.instance
+            .collection('users')
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .update({'profileImage': imageUrl});
+        Navigator.pop(context);
+        showSnackBar(context, 'Image uploaded successfully');
+      } catch (e) {
+        showSnackBar(context, e.toString());
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    double btnWidth = MediaQuery.of(context).size.width;
+    double theWidth = btnWidth > 500 ? 241 : btnWidth * 0.8;
     return Scaffold(
       backgroundColor: whiteColor,
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Row(
           children: [
             GestureDetector(
               onTap: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => const EmeployeeDashboard()));
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const EmeployeeDashboard(),
+                  ),
+                );
               },
               child: SvgPicture.asset(
                 'assets/arrow-left.svg',
@@ -59,161 +195,251 @@ class _EmployeeSettingsScreenState extends State<EmployeeSettingsScreen> {
             ),
             const Text(
               'Settings',
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ],
         ),
       ),
       body: Column(
         children: [
-          Container(
-            width: MediaQuery.of(context).size.width,
-            padding: const EdgeInsets.all(20),
-            decoration: const BoxDecoration(
-                color: whiteColor,
-                border: Border(
-                    top: BorderSide(color: Colors.black, width: 2),
-                    bottom: BorderSide(color: Colors.black, width: 2))),
-            child: Row(
-              children: [
-                Stack(
-                  children: [
-                    const CircleAvatar(
-                      radius: 45,
-                      backgroundColor: backgroundColor,
-                      backgroundImage: NetworkImage(
-                        'https://images.unsplash.com/photo-1717457781885-d1cd3ede18e3?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxlZGl0b3JpYWwtZmVlZHwxfHx8ZW58MHx8fHx8',
+          Divider(
+            thickness: 2,
+            color: Colors.black,
+          ),
+          const SizedBox(
+            width: 20,
+          ),
+          Row(
+            children: [
+              Stack(
+                children: [
+                  Container(
+                    margin: EdgeInsets.only(left: 10.0),
+                    width: 100,
+                    height: 100,
+                    decoration: BoxDecoration(
+                      color: Color.fromARGB(255, 231, 230, 230),
+                      border: Border.all(color: Colors.grey, width: 1),
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(50.0),
                       ),
                     ),
-                    Positioned(
-                      left: 67,
-                      child: GestureDetector(
-                        onTap: () {},
-                        child: SvgPicture.asset(
-                          'assets/image_picker_icon.svg',
-                          width: 15,
-                          height: 15,
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-                const SizedBox(
-                  width: 20,
-                ),
-                const Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Dev Patrick N...',
-                      style: TextStyle(
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10.0),
+                      child: _profileImage != null
+                          ? ClipRRect(
+                              borderRadius: BorderRadius.circular(50.0),
+                              child: Image.memory(
+                                _profileImage!,
+                                fit: BoxFit.cover,
+                                width: double.infinity,
+                                height: double.infinity,
+                              ),
+                            )
+                          : Center(
+                              child: Text(
+                                '',
+                                style: TextStyle(color: borderBlueColor),
+                              ),
+                            ),
+                    ),
+                  ),
+                  Positioned(
+                    left: 77,
+                    child: GestureDetector(
+                      onTap: selectImage,
+                      child: SvgPicture.asset(
+                        'assets/image_picker_icon.svg',
+                        width: 15,
+                        height: 15,
                       ),
                     ),
-                    Text('Welcome to your profile page...')
-                  ],
-                ),
-              ],
-            ),
+                  )
+                ],
+              ),
+              const SizedBox(
+                width: 20,
+              ),
+              const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Dev Patrick N...',
+                    style: TextStyle(
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text('Welcome to your profile page...')
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(
+            width: 20,
+          ),
+          Divider(
+            thickness: 2,
+            color: Colors.black,
           ),
           Padding(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(0),
             child: Column(
               children: [
-                EmployeeContainer(
-                  containerName: 'Change profile name',
-                  function: () {},
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                EmployeeTextFieldInput(
-                  textEditingController: _nameController,
-                  hintText: 'Profile:',
-                  textInputType: TextInputType.text,
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                EmployeeTextFieldInput(
-                  textEditingController: _devNameController,
-                  hintText: 'Display name:',
-                  textInputType: TextInputType.text,
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                Stack(
-                  children: [
-                    Opacity(
-                      opacity: 1,
-                      child: Center(
-                        child: SvgPicture.asset(
-                          'assets/employee_background_image.svg',
-                          width: 100,
-                          height: 230,
-                          fit: BoxFit.cover,
+                Theme(
+                  data: Theme.of(context)
+                      .copyWith(dividerColor: Colors.transparent),
+                  child: ExpansionTile(
+                    expandedAlignment: Alignment.center,
+                    // title: Text(''),
+                    title: Text(
+                      'Change profile name',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 13.0,
+                      ),
+                    ),
+                    children: [
+                      EmployeeTextFieldInput(
+                        textEditingController: _nameController,
+                        hintText: 'Enter new name:',
+                        textInputType: TextInputType.text,
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      EmployeeTextFieldInput(
+                        textEditingController: _confirmNameController,
+                        hintText: 'Confirm new name:',
+                        textInputType: TextInputType.text,
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      SizedBox(
+                        width: theWidth,
+                        child: EmployeeCustomButton(
+                          function: _updateName,
+                          backgroundColor: Colors.transparent,
+                          borderColor: appColor,
+                          text: 'Update Name',
+                          textColor: appColor,
+                          boderWidth: 2,
                         ),
                       ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.all(1),
-                      width: MediaQuery.of(context).size.width,
-                      child: Column(
-                        children: [
-                          EmployeeContainer(
-                            containerName: 'Change Email',
-                            function: () {},
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          EmployeeTextFieldInput(
-                            textEditingController: _emailController,
-                            hintText: 'Email:',
-                            textInputType: TextInputType.emailAddress,
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          EmployeeTextFieldInput(
-                            textEditingController: _confirmEmailController,
-                            hintText: 'Confirm email:',
-                            textInputType: TextInputType.emailAddress,
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          EmployeeContainer(
-                            containerName: 'Change Password',
-                            function: () {},
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          EmployeeTextFieldInput(
-                            textEditingController: _passwordController,
-                            hintText: 'Password:',
-                            textInputType: TextInputType.text,
-                            isPass: true,
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          EmployeeTextFieldInput(
-                            textEditingController: _confirmPasswordController,
-                            hintText: 'Confirm password:',
-                            textInputType: TextInputType.text,
-                            isPass: true,
-                          ),
-                        ],
+                      const SizedBox(
+                        height: 20,
+                      ),
+                    ],
+                  ),
+                ),
+                Theme(
+                  data: Theme.of(context)
+                      .copyWith(dividerColor: Colors.transparent),
+                  child: ExpansionTile(
+                    // title: Text(''),
+                    expandedAlignment: Alignment.center,
+
+                    title: Text(
+                      'Change Email',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 13.0,
                       ),
                     ),
-                  ],
+                    children: [
+                      EmployeeTextFieldInput(
+                        textEditingController: _emailController,
+                        hintText: 'Email:',
+                        textInputType: TextInputType.text,
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      EmployeeTextFieldInput(
+                        textEditingController: _confirmEmailController,
+                        hintText: 'Confirm Email:',
+                        textInputType: TextInputType.text,
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      SizedBox(
+                        width: theWidth,
+                        child: EmployeeCustomButton(
+                          function: _updateEmail,
+                          backgroundColor: Colors.transparent,
+                          borderColor: appColor,
+                          text: 'Update Email',
+                          textColor: appColor,
+                          boderWidth: 2,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                    ],
+                  ),
+                ),
+                Theme(
+                  data: Theme.of(context)
+                      .copyWith(dividerColor: Colors.transparent),
+                  child: ExpansionTile(
+                    expandedAlignment: Alignment.center,
+                    title: Text(''),
+                    leading: Text(
+                      'Change password',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 13.0,
+                      ),
+                    ),
+                    children: [
+                      EmployeeTextFieldInput(
+                        textEditingController: _passwordController,
+                        hintText: 'Pasword:',
+                        textInputType: TextInputType.text,
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      EmployeeTextFieldInput(
+                        textEditingController: _confirmPasswordController,
+                        hintText: 'Confirm Password:',
+                        textInputType: TextInputType.text,
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      SizedBox(
+                        width: theWidth,
+                        child: EmployeeCustomButton(
+                          function: _updatePassword,
+                          backgroundColor: Colors.transparent,
+                          borderColor: appColor,
+                          text: 'Update password',
+                          textColor: appColor,
+                          boderWidth: 2,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  width: 150,
+                  child: EmployeeCustomButton(
+                    function: _uploadPicure,
+                    backgroundColor: Colors.transparent,
+                    boderWidth: 2,
+                    borderColor: Colors.black,
+                    text: 'Update photo',
+                    textColor: Colors.black,
+                  ),
                 ),
               ],
             ),
@@ -223,202 +449,3 @@ class _EmployeeSettingsScreenState extends State<EmployeeSettingsScreen> {
     );
   }
 }
-
-
-
-
-//profile page for employee
-
-// import 'package:flutter/material.dart';
-// import 'package:flutter_svg/flutter_svg.dart';
-// import 'package:firebase_auth/firebase_auth.dart';
-// import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'package:firebase_storage/firebase_storage.dart';
-// import 'package:image_picker/image_picker.dart';
-
-// class EmployeeSettingsScreen extends StatefulWidget {
-//   const EmployeeSettingsScreen({super.key});
-
-//   @override
-//   State<EmployeeSettingsScreen> createState() => _EmployeeSettingsScreenState();
-// }
-
-// class _EmployeeSettingsScreenState extends State<EmployeeSettingsScreen> {
-//   final _nameController = TextEditingController();
-//   final _emailController = TextEditingController();
-//   final _confirmEmailController = TextEditingController();
-//   final _passwordController = TextEditingController();
-//   final _confirmPasswordController = TextEditingController();
-
-//   @override
-//   void dispose() {
-//     _nameController.dispose();
-//     _emailController.dispose();
-//     _confirmEmailController.dispose();
-//     _passwordController.dispose();
-//     _confirmPasswordController.dispose();
-//     super.dispose();
-//   }
-
-//   Future<void> _updateName() async {
-//     if (_nameController.text.isNotEmpty) {
-//       await FirebaseAuth.instance.currentUser!.updateDisplayName(_nameController.text);
-//       await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).update({'name': _nameController.text});
-//       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Name updated successfully')));
-//     }
-//   }
-
-//   Future<void> _updateEmail() async {
-//     if (_emailController.text.isNotEmpty && _emailController.text == _confirmEmailController.text) {
-//       await FirebaseAuth.instance.currentUser!.updateEmail(_emailController.text);
-//       await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).update({'email': _emailController.text});
-//       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Email updated successfully')));
-//     }
-//   }
-
-//   Future<void> _updatePassword() async {
-//     if (_passwordController.text.isNotEmpty && _passwordController.text == _confirmPasswordController.text) {
-//       await FirebaseAuth.instance.currentUser!.updatePassword(_passwordController.text);
-//       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Password updated successfully')));
-//     }
-//   }
-
-//   Future<void> _pickImage() async {
-//     final picker = ImagePicker();
-//     final pickedFile = await picker.getImage(source: ImageSource.gallery);
-//     if (pickedFile != null) {
-//       final file = File(pickedFile.path);
-//       final storageRef = FirebaseStorage.instance.ref().child('profile_pictures/${FirebaseAuth.instance.currentUser!.uid}.jpg');
-//       await storageRef.putFile(file);
-//       final imageUrl = await storageRef.getDownloadURL();
-//       await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).update({'profilePicture': imageUrl});
-//       setState(() {});
-//       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Profile picture updated successfully')));
-//     }
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       backgroundColor: Colors.white,
-//       resizeToAvoidBottomInset: false,
-//       appBar: AppBar(
-//         title: Row(
-//           children: [
-//             GestureDetector(
-//               onTap: () {
-//                 Navigator.of(context).pop();
-//               },
-//               child: SvgPicture.asset(
-//                 'assets/arrow-left.svg',
-//                 width: 30,
-//                 height: 30,
-//               ),
-//             ),
-//             const SizedBox(width: 30),
-//             const Text('Settings', style: TextStyle(fontWeight: FontWeight.bold)),
-//           ],
-//         ),
-//       ),
-//       body: Padding(
-//         padding: const EdgeInsets.all(20),
-//         child: Column(
-//           children: [
-//             Row(
-//               children: [
-//                 Stack(
-//                   children: [
-//                     CircleAvatar(
-//                       radius: 45,
-//                       backgroundColor: Colors.grey.shade200,
-//                       backgroundImage: NetworkImage(
-//                         'https://images.unsplash.com/photo-1717457781885-d1cd3ede18e3?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxlZGl0b3JpYWwtZmVlZHwxfHx8ZW58MHx8fHx8',
-//                       ),
-//                     ),
-//                     Positioned(
-//                       left: 67,
-//                       child: GestureDetector(
-//                         onTap: _pickImage,
-//                         child: SvgPicture.asset(
-//                           'assets/image_picker_icon.svg',
-//                           width: 15,
-//                           height: 15,
-//                         ),
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//                 const SizedBox(width: 20),
-//                 Column(
-//                   crossAxisAlignment: CrossAxisAlignment.start,
-//                   children: [
-//                     Text('Dev Patrick N...', style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
-//                     Text('Welcome to your profile page...')
-//                   ],
-//                 ),
-//               ],
-//             ),
-//             const SizedBox(height: 20),
-//             EmployeeTextFieldInput(
-//               textEditingController: _nameController,
-//               hintText: 'Profile Name:',
-//               textInputType: TextInputType.text,
-//             ),
-//             ElevatedButton(onPressed: _updateName, child: const Text('Update Name')),
-//             const SizedBox(height: 10),
-//             EmployeeTextFieldInput(
-//               textEditingController: _emailController,
-//               hintText: 'Email:',
-//               textInputType: TextInputType.emailAddress,
-//             ),
-//             EmployeeTextFieldInput(
-//               textEditingController: _confirmEmailController,
-//               hintText: 'Confirm Email:',
-//               textInputType: TextInputType.emailAddress,
-//             ),
-//             ElevatedButton(onPressed: _updateEmail, child: const Text('Update Email')),
-//             const SizedBox(height: 10),
-//             EmployeeTextFieldInput(
-//               textEditingController: _passwordController,
-//               hintText: 'Password:',
-//               textInputType: TextInputType.text,
-//               isPass: true,
-//             ),
-//             EmployeeTextFieldInput(
-//               textEditingController: _confirmPasswordController,
-//               hintText: 'Confirm Password:',
-//               textInputType: TextInputType.text,
-//               isPass: true,
-//             ),
-//             ElevatedButton(onPressed: _updatePassword, child: const Text('Update Password')),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
-
-// class EmployeeTextFieldInput extends StatelessWidget {
-//   final TextEditingController textEditingController;
-//   final String hintText;
-//   final TextInputType textInputType;
-//   final bool isPass;
-
-//   const EmployeeTextFieldInput({
-//     required this.textEditingController,
-//     required this.hintText,
-//     required this.textInputType,
-//     this.isPass = false,
-//     Key? key,
-//   }) : super(key: key);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return TextField(
-//       controller: textEditingController,
-//       decoration: InputDecoration(hintText: hintText),
-//       keyboardType: textInputType,
-//       obscureText: isPass,
-//     );
-//   }
-// }
