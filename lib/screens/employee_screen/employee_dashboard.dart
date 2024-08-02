@@ -1,9 +1,13 @@
 import 'package:billyinventory/common_widgets/my_custom_search_bar.dart';
+import 'package:billyinventory/providers/card_provider.dart';
+import 'package:billyinventory/providers/user_provider.dart';
 import 'package:billyinventory/screens/employee_screen/employee_profile_screen.dart';
+import 'package:billyinventory/screens/employee_screen/emplyee_widgets/employee_custom_drawer.dart';
 import 'package:billyinventory/screens/employee_screen/emplyee_widgets/employee_product_card.dart';
 import 'package:billyinventory/utils/colors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class EmeployeeDashboard extends StatefulWidget {
   const EmeployeeDashboard({super.key});
@@ -14,8 +18,11 @@ class EmeployeeDashboard extends StatefulWidget {
 
 class _EmeployeeDashboardState extends State<EmeployeeDashboard> {
   final searchEditingController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
+    final user = Provider.of<UserProvider>(context).getUser;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: adminBackgroundColor,
@@ -56,7 +63,7 @@ class _EmeployeeDashboardState extends State<EmeployeeDashboard> {
                 ),
                 child: ClipOval(
                   child: Image.network(
-                    'https://unsplash.com/photos/a-bedroom-with-two-beds-and-a-chandelier-LDNMoidhgow',
+                    user.profileImage,
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -65,7 +72,8 @@ class _EmeployeeDashboardState extends State<EmeployeeDashboard> {
           ],
         ),
       ),
-      drawer: Drawer(),
+      drawer: NavBar(),
+      drawerEnableOpenDragGesture: false,
       floatingActionButton: GestureDetector(
         onTap: () {
           Navigator.of(context).pushReplacementNamed('/emplyeecardscreen');
@@ -91,7 +99,10 @@ class _EmeployeeDashboardState extends State<EmeployeeDashboard> {
                   ),
                   child: Center(
                     child: Text(
-                      '0',
+                      Provider.of<CartProvider>(context)
+                          .items
+                          .length
+                          .toString(),
                       style: TextStyle(
                           color: whiteColor,
                           fontWeight: FontWeight.bold,
@@ -144,12 +155,6 @@ class _EmeployeeDashboardState extends State<EmeployeeDashboard> {
                   stream: FirebaseFirestore.instance
                       .collection('products')
                       .snapshots(),
-
-                  // stream: FirebaseFirestore.instance
-                  //     .collection('products')
-                  //     .orderBy('addedDate', descending: true)
-                  //     .limit(10) // Limit to 10 most recent
-                  //     .snapshots(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return Center(
@@ -185,6 +190,15 @@ class _EmeployeeDashboardState extends State<EmeployeeDashboard> {
                             imageUrl: product['productImage'],
                             name: product['productName'],
                             price: product['sellingPrice'],
+                            function: () {
+                              Provider.of<CartProvider>(context, listen: false)
+                                  .addItem(
+                                product['productId'],
+                                product['productName'],
+                                product['sellingPrice'],
+                                product['productImage'],
+                              );
+                            },
                           );
                         },
                       ),
@@ -216,12 +230,6 @@ class _EmeployeeDashboardState extends State<EmeployeeDashboard> {
                   stream: FirebaseFirestore.instance
                       .collection('products')
                       .snapshots(),
-                  // stream: FirebaseFirestore.instance
-                  //     .collection('products')
-                  //     .where('category',
-                  //         isEqualTo:
-                  //             'others')
-                  //     .snapshots(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return Center(child: CircularProgressIndicator());
@@ -252,6 +260,15 @@ class _EmeployeeDashboardState extends State<EmeployeeDashboard> {
                             imageUrl: product['productImage'],
                             name: product['productName'],
                             price: product['sellingPrice'],
+                            function: () {
+                              Provider.of<CartProvider>(context, listen: false)
+                                  .addItem(
+                                product['productId'],
+                                product['productName'],
+                                product['sellingPrice'],
+                                product['productImage'],
+                              );
+                            },
                           );
                         },
                       ),
@@ -283,12 +300,6 @@ class _EmeployeeDashboardState extends State<EmeployeeDashboard> {
                   stream: FirebaseFirestore.instance
                       .collection('products')
                       .snapshots(),
-                  // stream: FirebaseFirestore.instance
-                  //     .collection('products')
-                  //     .where('category',
-                  //         isEqualTo:
-                  //             'others')
-                  //     .snapshots(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return Center(child: CircularProgressIndicator());
@@ -319,6 +330,15 @@ class _EmeployeeDashboardState extends State<EmeployeeDashboard> {
                             imageUrl: product['productImage'],
                             name: product['productName'],
                             price: product['sellingPrice'],
+                            function: () {
+                              Provider.of<CartProvider>(context, listen: false)
+                                  .addItem(
+                                product['productId'],
+                                product['productName'],
+                                product['sellingPrice'],
+                                product['productImage'],
+                              );
+                            },
                           );
                         },
                       ),
@@ -333,88 +353,3 @@ class _EmeployeeDashboardState extends State<EmeployeeDashboard> {
     );
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// body: StreamBuilder<QuerySnapshot>(
-//   stream: FirebaseFirestore.instance.collection('products').snapshots(),
-//   builder: (context, snapshot) {
-//     if (snapshot.connectionState == ConnectionState.waiting) {
-//       return Center(child: CircularProgressIndicator());
-//     }
-
-//     if (snapshot.hasError) {
-//       return Center(child: Text('Error: ${snapshot.error}'),);
-//     }
-
-//     if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-//       return Center(child: Text('No products found'));
-//     }
-
-//     final products = snapshot.data!.docs;
-
-//     return GridView.builder(
-//       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-//         crossAxisCount: 3,
-//         crossAxisSpacing: 1.0,
-//         mainAxisSpacing: 2.0,
-//         // childAspectRatio: 0.7, // Adjust as needed
-//       ),
-//       itemCount: products.length,
-//       itemBuilder: (context, index) {
-//         final product = products[index];
-//         return ProductCard(
-//           imageUrl: product['productImage'],
-//           name: product['productName'],
-//           price: product['sellingPrice'],
-//         );
-//       },
-//     );
-//   },
-// ),
-
-// body: SingleChildScrollView(
-//   child: SafeArea(
-//     child: Padding(
-//       padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-//       child: Column(
-//         crossAxisAlignment: CrossAxisAlignment.center,
-//         children: [
-//           const SizedBox(
-//             height: 15,
-//           ),
-//           Center(
-//             child: CustomSearchBar(
-//               controller: searchEditingController,
-//               searchContainerWidth: 299.0,
-//               searchContainerHeight: 30,
-//               searchContainerBorderColor: appColor,
-//             ),
-//           ),
-//         ],
-//       ),
-//     ),
-//   ),
-// ),

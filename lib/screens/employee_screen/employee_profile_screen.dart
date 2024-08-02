@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:billyinventory/providers/user_provider.dart';
 import 'package:billyinventory/screens/employee_screen/employee_dashboard.dart';
 import 'package:billyinventory/screens/employee_screen/emplyee_widgets/employee_custom_button.dart';
 import 'package:billyinventory/screens/employee_screen/emplyee_widgets/employee_text_input.dart';
@@ -12,6 +13,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
 class EmployeeSettingsScreen extends StatefulWidget {
@@ -128,7 +130,6 @@ class _EmployeeSettingsScreenState extends State<EmployeeSettingsScreen> {
       return;
     }
 
-
     try {
       await FirebaseAuth.instance.currentUser!
           .updatePassword(_passwordController.text);
@@ -167,6 +168,8 @@ class _EmployeeSettingsScreenState extends State<EmployeeSettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final user = Provider.of<UserProvider>(context).getUser;
+
     double btnWidth = MediaQuery.of(context).size.width;
     double theWidth = btnWidth > 500 ? 241 : btnWidth * 0.8;
     return Scaffold(
@@ -262,13 +265,13 @@ class _EmployeeSettingsScreenState extends State<EmployeeSettingsScreen> {
               const SizedBox(
                 width: 20,
               ),
-              const Column(
+              Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Dev Patrick N...',
+                    user.name,
                     style: TextStyle(
-                      fontSize: 25,
+                      fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
                   ),

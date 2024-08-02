@@ -7,6 +7,29 @@ class AuthService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  //get user details
+  Stream<model.User?> userChanges() {
+    User? currentUser = _firebaseAuth.currentUser;
+    if (currentUser == null) {
+      // Return a stream with null to indicate no user is logged in
+      return Stream<model.User?>.value(null);
+    }
+
+    return _firestore
+        .collection('users')
+        .doc(currentUser.uid)
+        .snapshots()
+        .map((snapshot) {
+      // Check if the document exists before converting it
+      if (snapshot.exists) {
+        return model.User.fromSnap(snapshot);
+      } else {
+        // Handle the case where the user document doesn't exist
+        return null;
+      }
+    });
+  }
+
   // Sign Up User Function
   Future<model.User> signUpUser(
     String name,

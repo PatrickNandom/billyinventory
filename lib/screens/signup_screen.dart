@@ -6,9 +6,7 @@ import 'package:billyinventory/screens/dashboard.dart';
 import 'package:billyinventory/utils/colors.dart';
 import 'package:billyinventory/utils/show_progress_indicator.dart';
 import 'package:billyinventory/utils/snachbar.dart';
-
 import '../services/auth_service.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -198,7 +196,7 @@ class _SignUpState extends State<SignUp> {
                           height: 20,
                         ),
                         const Text(
-                          '-------------or continue with----------------',
+                          '-------------or continue with-------------',
                           style: TextStyle(
                             fontWeight: FontWeight.normal,
                             color: Colors.grey,
