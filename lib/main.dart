@@ -8,6 +8,7 @@ import 'package:billyinventory/screens/employee_screen/employee_card_screen.dart
 import 'package:billyinventory/screens/employee_screen/employee_dashboard.dart';
 import 'package:billyinventory/screens/login_screen.dart';
 import 'package:billyinventory/screens/signup_screen.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
@@ -16,6 +17,12 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  await FirebaseAppCheck.instance.activate(
+    webProvider: ReCaptchaV3Provider('recaptcha-v3-site-key'),
+    androidProvider: AndroidProvider.debug,
+    appleProvider: AppleProvider.appAttest,
   );
   runApp(const MyApp());
 }
@@ -34,9 +41,8 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         routes: {
           '/': (context) => Login(),
-          // '/': (context) => EmployeeCardScreen(),
           '/signup': (context) => SignUp(),
-          // '/emplyeecardscreen': (context) => EmployeeCardScreen(),
+          '/emplyeecardscreen': (context) => EmployeeCardScreen(),
           '/emplyeedashboard': (context) => EmeployeeDashboard(),
           '/productpreview': (context) => ProductPreviewScreen(),
           '/adminaddproductscreen': (context) => AddProductScreen(),

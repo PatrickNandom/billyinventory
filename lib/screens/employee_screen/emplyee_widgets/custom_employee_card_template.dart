@@ -29,8 +29,11 @@ class EmployeeProductCard extends StatelessWidget {
           children: [
             Container(
               width: 119,
-              height: 80,
-              color: Colors.white,
+              height: 90,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(7.0),
+              ),
               child: Image.network(
                 productImage,
                 fit: BoxFit.cover,

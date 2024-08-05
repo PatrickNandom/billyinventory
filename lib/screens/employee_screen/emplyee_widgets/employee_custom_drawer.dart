@@ -1,4 +1,5 @@
 import 'package:billyinventory/providers/user_provider.dart';
+import 'package:billyinventory/screens/admin_screen/admin_store_screen.dart';
 import 'package:billyinventory/screens/employee_screen/employee_dashboard.dart';
 import 'package:billyinventory/screens/employee_screen/employee_profile_screen.dart';
 import 'package:billyinventory/services/auth_service.dart';
@@ -69,7 +70,13 @@ class NavBar extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.show_chart),
             title: Text('View Sales'),
-            onTap: () {},
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => StorePage(),
+                ),
+              );
+            },
           ),
           ListTile(
             leading: Icon(Icons.logout),

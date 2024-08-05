@@ -1,189 +1,194 @@
-// import 'package:flutter/material.dart';
-// import 'package:cloud_firestore/cloud_firestore.dart';
-
-// class GridTableScreen extends StatefulWidget {
-//   @override
-//   _GridTableScreenState createState() => _GridTableScreenState();
-// }
-
-// class _GridTableScreenState extends State<GridTableScreen> {
-//   late Future<List<Map<String, dynamic>>> _dataFuture;
-
-//   @override
-//   void initState() {
-//     super.initState();
-//     _dataFuture = fetchData();
-//   }
-
-//   Future<List<Map<String, dynamic>>> fetchData() async {
-//     QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('items').get();
-//     return querySnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text('Grid Table Example'),
-//       ),
-//       body: FutureBuilder<List<Map<String, dynamic>>>(
-//         future: _dataFuture,
-//         builder: (context, snapshot) {
-//           if (snapshot.connectionState == ConnectionState.waiting) {
-//             return Center(child: CircularProgressIndicator());
-//           } else if (snapshot.hasError) {
-//             return Center(child: Text('Error: ${snapshot.error}'));
-//           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-//             return Center(child: Text('No Data Available'));
-//           }
-
-//           List<Map<String, dynamic>> data = snapshot.data!;
-
-//           return SingleChildScrollView(
-//             scrollDirection: Axis.horizontal,
-//             child: SingleChildScrollView(
-//               child: Table(
-//                 border: TableBorder.all(color: Colors.black),
-//                 children: [
-//                   // Table header
-//                   TableRow(
-//                     decoration: BoxDecoration(color: Colors.blueGrey),
-//                     children: [
-//                       _buildTableCell('Column 1', isHeader: true),
-//                       _buildTableCell('Column 2', isHeader: true),
-//                       _buildTableCell('Column 3', isHeader: true),
-//                     ],
-//                   ),
-//                   // Table data
-//                   for (var item in data)
-//                     TableRow(
-//                       children: [
-//                         _buildTableCell(item['field1'].toString()),
-//                         _buildTableCell(item['field2'].toString()),
-//                         _buildTableCell(item['field3'].toString()),
-//                       ],
-//                     ),
-//                 ],
-//               ),
-//             ),
-//           );
-//         },
-//       ),
-//     );
-//   }
-
-//   Widget _buildTableCell(String text, {bool isHeader = false}) {
-//     return Container(
-//       padding: EdgeInsets.all(8.0),
-//       decoration: BoxDecoration(
-//         border: Border.all(color: Colors.black),
-//         color: isHeader ? Colors.blueGrey : Colors.white,
-//       ),
-//       child: Text(
-//         text,
-//         style: TextStyle(
-//           color: isHeader ? Colors.white : Colors.black,
-//           fontWeight: isHeader ? FontWeight.bold : FontWeight.normal,
-//         ),
-//       ),
-//     );
-//   }
-// }
-
-////////////////////////////////////////
-//  NEW DATA TABLE
-/*
-
-// main.dart
+import 'package:billyinventory/models/products_model.dart';
+import 'package:billyinventory/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
+class StorePage extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Firestore DataTable',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: ProductTableScreen(),
-    );
-  }
+  _StorePageState createState() => _StorePageState();
 }
 
-class ProductTableScreen extends StatelessWidget {
-  final CollectionReference productsCollection =
-      FirebaseFirestore.instance.collection('products');
+class _StorePageState extends State<StorePage> {
+  String searchQuery = '';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: adminBackgroundColor,
       appBar: AppBar(
-        title: Text('Product DataTable'),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Store',
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            SizedBox(
+              width: 200,
+              child: TextField(
+                onChanged: (value) {
+                  setState(
+                    () {
+                      searchQuery = value.toLowerCase();
+                    },
+                  );
+                },
+                decoration: InputDecoration(
+                  hintText: 'Search product',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                    borderSide: BorderSide.none,
+                  ),
+                  filled: true,
+                  fillColor: whiteColor,
+                  contentPadding: EdgeInsets.all(10),
+                ),
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: appColor,
       ),
-      body: FutureBuilder<QuerySnapshot>(
-        future: productsCollection.get(),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance.collection('products').snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
           }
-          if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
+          if (!snapshot.hasData) {
+            return Center(child: Text('No products found'));
           }
 
-          final List<DocumentSnapshot> documents = snapshot.data!.docs;
+          var filteredDocs = snapshot.data!.docs.where(
+            (doc) {
+              var data = doc.data() as Map<String, dynamic>;
+              var productName = data['productName'] ?? '';
+              return productName.toLowerCase().contains(searchQuery);
+            },
+          ).toList();
 
-          return SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
             child: SingleChildScrollView(
-              child: DataTable(
-                headingRowColor: MaterialStateProperty.all<Color>(Colors.gold),
-                border: TableBorder.all(),
-                columnSpacing: 16.0,
-                headingRowHeight: 50.0,
-                dataRowHeight: 60.0,
-                columns: const [
-                  DataColumn(
-                    label: Center(child: Text('S/N')),
-                  ),
-                  DataColumn(
-                    label: Center(child: Text('Product Name')),
-                  ),
-                  DataColumn(
-                    label: Center(child: Text('Price')),
-                  ),
-                  DataColumn(
-                    label: Center(child: Text('Status')),
-                  ),
-                  DataColumn(
-                    label: Center(child: Text('Qty')),
+              child: Column(
+                children: [
+                  Table(
+                    border: TableBorder(
+                      horizontalInside: BorderSide(
+                        width: 1,
+                        color: const Color.fromARGB(255, 15, 13, 13),
+                      ),
+                    ),
+                    columnWidths: const <int, TableColumnWidth>{
+                      0: FixedColumnWidth(50.0),
+                      1: FlexColumnWidth(),
+                      2: FixedColumnWidth(100.0),
+                      3: FixedColumnWidth(50.0),
+                    },
+                    children: [
+                      TableRow(
+                        decoration: BoxDecoration(
+                          color: appColor,
+                          borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(20),
+                          ),
+                        ),
+                        children: [
+                          TableCell(
+                            child: Center(
+                              child: Text(
+                                '#',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                          ),
+                          TableCell(
+                            child: Center(
+                              child: Text(
+                                'Product Name',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                          ),
+                          TableCell(
+                            child: Center(
+                              child: Text(
+                                'Status',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                          ),
+                          TableCell(
+                            child: Center(
+                              child: Text(
+                                'Qty',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      ...filteredDocs.asMap().entries.map((entry) {
+                        var index = entry.key;
+                        var doc = entry.value;
+                        var product = Product.fromSnap(doc);
+
+                        String statusText =
+                            product.quantity < 10 ? 'Low' : 'Active';
+                        Color statusColor =
+                            product.quantity < 10 ? Colors.red : Colors.green;
+
+                        return TableRow(
+                          decoration: BoxDecoration(
+                            color: Colors.grey[200],
+                            border: Border(
+                              bottom: BorderSide(color: Colors.grey),
+                            ),
+                          ),
+                          children: [
+                            TableCell(
+                              child: Center(
+                                child: Text('${index + 1}'),
+                              ),
+                            ),
+                            TableCell(
+                              child: Center(
+                                child: Text(product.productName),
+                              ),
+                            ),
+                            TableCell(
+                              child: Center(
+                                child: Text(
+                                  statusText,
+                                  style: TextStyle(color: statusColor),
+                                ),
+                              ),
+                            ),
+                            TableCell(
+                              child: Center(
+                                child: Text('${product.quantity}'),
+                              ),
+                            ),
+                          ],
+                        );
+                      }).toList(),
+                    ],
                   ),
                 ],
-                rows: documents
-                    .asMap()
-                    .entries
-                    .map((entry) {
-                      final index = entry.key;
-                      final product = entry.value.data() as Map<String, dynamic>;
-
-                      return DataRow(
-                        cells: [
-                          DataCell(Center(child: Text('${index + 1}'))),
-                          DataCell(Center(child: Text(product['name'] ?? ''))),
-                          DataCell(Center(child: Text(product['price'].toString()))),
-                          DataCell(Center(child: Text(product['status'] ?? ''))),
-                          DataCell(Center(child: Text(product['quantity'].toString()))),
-                        ],
-                      );
-                    })
-                    .toList(),
               ),
             ),
           );
@@ -192,6 +197,3 @@ class ProductTableScreen extends StatelessWidget {
     );
   }
 }
-
-
-*/

@@ -29,6 +29,13 @@
             {
               "client_id": "921598256200-pp41sdnpqoegv5kd4s2i6iva5291h4vn.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "921598256200-rg5pc4vfq97vc21e7isrbpbpk4fnktj7.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.billyinventory"
+              }
             }
           ]
         }
