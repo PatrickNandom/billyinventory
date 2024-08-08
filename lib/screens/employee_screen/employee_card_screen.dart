@@ -1,11 +1,18 @@
 import 'package:billyinventory/common_widgets/my_custom_button.dart';
+import 'package:billyinventory/models/products_model.dart';
+import 'package:billyinventory/models/sales_model.dart';
 import 'package:billyinventory/providers/card_provider.dart';
 import 'package:billyinventory/screens/admin_screen/admin_widgets/admin_custom_button.dart';
 import 'package:billyinventory/screens/employee_screen/emplyee_widgets/custom_employee_card_template.dart';
 import 'package:billyinventory/utils/colors.dart';
+import 'package:billyinventory/utils/show_progress_indicator.dart';
+import 'package:billyinventory/utils/snachbar.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:uuid/uuid.dart';
 
 class EmployeeCardScreen extends StatefulWidget {
   const EmployeeCardScreen({super.key});
@@ -15,11 +22,72 @@ class EmployeeCardScreen extends StatefulWidget {
 }
 
 class _EmployeeCardScreenState extends State<EmployeeCardScreen> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
   // Function to get formatted current date
   String getCurrentFormattedDate() {
     DateTime now = DateTime.now();
     String formattedDate = DateFormat('EEEE dd MMMM').format(now);
     return 'Today $formattedDate';
+  }
+
+  // Function to handle the approval and update sales records
+  Future<void> _createSales() async {
+    final cartProvider = Provider.of<CartProvider>(context, listen: false);
+    final cartItems = cartProvider.items.values.toList();
+    if (cartItems.isEmpty) {
+      showSnackBar(context, 'No items in cart');
+      return;
+    }
+    final user = _auth.currentUser;
+    if (user == null) return;
+    showProgressIndicator(context);
+
+    final empId = user.uid;
+    final empName = user.displayName ?? 'Unknown';
+
+    try {
+      for (final item in cartItems) {
+        // Update product quantity
+        final productRef =
+            _firestore.collection('products').doc(item.productID);
+        final productSnap = await productRef.get();
+        final product = Product.fromSnap(productSnap);
+        final newQuantity = product.quantity - item.quantity;
+        if (newQuantity < 0) {
+          throw Exception(
+              'Insufficient quantity for product ${item.productName}');
+        }
+        await productRef.update({'quantity': newQuantity});
+      }
+      // geting the total quantity
+      int totlalQuantity = 0;
+      cartItems.forEach(
+        (item) {
+          totlalQuantity += item.quantity;
+        },
+      );
+
+      print('Total qty$totlalQuantity');
+      final salesId = Uuid().v4();
+      final sale = Sales(
+        saleId: salesId,
+        totalItems: cartProvider.items.length,
+        quantitySold: totlalQuantity.toString(),
+        totalPrice: cartProvider.totalAmount,
+        empId: empId,
+        empName: empName,
+        salesDate: DateTime.now(),
+      );
+
+      await _firestore.collection('sales').doc(salesId).set(sale.toJson());
+      showSnackBar(context, 'New sales record created sucessfully');
+      Navigator.pop(context);
+      cartProvider.clearCart();
+    } catch (e) {
+      showSnackBar(context, 'Error processing sale: $e');
+    }
   }
 
   @override
@@ -163,9 +231,7 @@ class _EmployeeCardScreenState extends State<EmployeeCardScreen> {
                         borderColor: appColor,
                         text: 'APPROVED',
                         textColor: whiteColor,
-                        function: () {
-                          // Add functionality for payment approval here
-                        },
+                        function: _createSales,
                         boderWidth: 0,
                       ),
                     ],

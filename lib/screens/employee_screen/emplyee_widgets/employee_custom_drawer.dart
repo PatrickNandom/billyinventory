@@ -2,8 +2,10 @@ import 'package:billyinventory/providers/user_provider.dart';
 import 'package:billyinventory/screens/admin_screen/admin_store_screen.dart';
 import 'package:billyinventory/screens/employee_screen/employee_dashboard.dart';
 import 'package:billyinventory/screens/employee_screen/employee_profile_screen.dart';
+import 'package:billyinventory/screens/employee_screen/employee_sales_screen.dart';
 import 'package:billyinventory/services/auth_service.dart';
 import 'package:billyinventory/utils/colors.dart';
+import 'package:billyinventory/utils/snachbar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -26,7 +28,7 @@ class NavBar extends StatelessWidget {
           UserAccountsDrawerHeader(
             decoration: BoxDecoration(color: appColor),
             accountName: Text(
-              user.name,
+              user!.name,
               style: TextStyle(fontWeight: FontWeight.w700),
             ),
             accountEmail: Text(user.email),
@@ -51,7 +53,7 @@ class NavBar extends StatelessWidget {
             onTap: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) => const EmeployeeDashboard(),
+                  builder: (context) => const EmployeeDashboard(),
                 ),
               );
             },
@@ -73,7 +75,7 @@ class NavBar extends StatelessWidget {
             onTap: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) => StorePage(),
+                  builder: (context) => SalesDetailsPage(),
                 ),
               );
             },
@@ -82,10 +84,15 @@ class NavBar extends StatelessWidget {
             leading: Icon(Icons.logout),
             title: Text('Logout'),
             onTap: () async {
-              await _authService.signOutUser();
-              // if (context.mounted) {
-              Navigator.of(context).pushReplacementNamed('/');
-              // }
+              try {
+                await _authService.signOutUser();
+                if (context.mounted) {
+                  Navigator.of(context).pushReplacementNamed('/');
+                }
+              } catch (error) {
+                print('logout error: ${error}');
+                showSnackBar(context, 'Failed to sign out: $error');
+              }
             },
           ),
         ],

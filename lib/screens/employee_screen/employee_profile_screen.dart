@@ -183,7 +183,7 @@ class _EmployeeSettingsScreenState extends State<EmployeeSettingsScreen> {
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => const EmeployeeDashboard(),
+                    builder: (context) => const EmployeeDashboard(),
                   ),
                 );
               },
@@ -269,7 +269,7 @@ class _EmployeeSettingsScreenState extends State<EmployeeSettingsScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    user.name,
+                    user!.name,
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,

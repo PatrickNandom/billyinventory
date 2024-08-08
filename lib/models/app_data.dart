@@ -218,23 +218,3 @@ List products = [
     "sellingPrice": 3
   }
 ];
-
-
-
-
-// print(
-//         'ProdKey ${(data['productKey'].runtimeType)} - ${data['productKey']}');
-//     print(
-//         'ProdName ${(data['productName'].runtimeType)}  - ${data['productName']}');
-//     print(
-//         'ProdImage ${(data['productImage'].runtimeType)} - ${data['productImage']}');
-//     print(
-//         'ProdDes ${(data['productDescription'].runtimeType)}  - ${data['productDescription']}');
-//     print(
-//         'ProdCat ${(data['productCategory'].runtimeType)} - ${data['productCategory']}');
-//     print(
-//         'ProdCost ${(data['productCostPrice'].runtimeType)} - ${data['productCostPrice']}');
-//     print(
-//         'ProdKSell ${(data['productSellingPrice'].runtimeType)} - ${data['productSellingPrice']}');
-//     print(
-//         'ProdQuantity ${(data['productQuantity'].runtimeType)} - ${data['productQuantity']}');

@@ -19,6 +19,6 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget build(BuildContext context) {
     return widget.user.isAdmin
         ? const AdminDashboard()
-        : const EmeployeeDashboard();
+        : const EmployeeDashboard();
   }
 }

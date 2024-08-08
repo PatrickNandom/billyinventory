@@ -29,11 +29,9 @@ class _StorePageState extends State<StorePage> {
               width: 200,
               child: TextField(
                 onChanged: (value) {
-                  setState(
-                    () {
-                      searchQuery = value.toLowerCase();
-                    },
-                  );
+                  setState(() {
+                    searchQuery = value.toLowerCase();
+                  });
                 },
                 decoration: InputDecoration(
                   hintText: 'Search product',
@@ -72,32 +70,51 @@ class _StorePageState extends State<StorePage> {
           return Padding(
             padding: const EdgeInsets.all(16.0),
             child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  Table(
-                    border: TableBorder(
-                      horizontalInside: BorderSide(
-                        width: 1,
-                        color: const Color.fromARGB(255, 15, 13, 13),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.all(Radius.circular(20)
+                      // top: Radius.circular(20),
+                      // bottom: Radius.circular(20),
                       ),
+                  border: Border.all(
+                    color: const Color.fromARGB(255, 15, 13, 13),
+                    width: 1,
+                  ),
+                ),
+                child: Table(
+                  border: TableBorder(
+                    horizontalInside: BorderSide(
+                      width: 1,
+                      color: const Color.fromARGB(255, 15, 13, 13),
                     ),
-                    columnWidths: const <int, TableColumnWidth>{
-                      0: FixedColumnWidth(50.0),
-                      1: FlexColumnWidth(),
-                      2: FixedColumnWidth(100.0),
-                      3: FixedColumnWidth(50.0),
-                    },
-                    children: [
-                      TableRow(
-                        decoration: BoxDecoration(
-                          color: appColor,
-                          borderRadius: BorderRadius.vertical(
-                            top: Radius.circular(20),
-                          ),
+                    verticalInside: BorderSide(
+                      width: 1,
+                      color: const Color.fromARGB(255, 15, 13, 13),
+                    ),
+                  ),
+                  columnWidths: const <int, TableColumnWidth>{
+                    0: FixedColumnWidth(60.0),
+                    1: FlexColumnWidth(),
+                    2: FixedColumnWidth(120.0),
+                    3: FixedColumnWidth(70.0),
+                  },
+                  children: [
+                    TableRow(
+                      decoration: BoxDecoration(
+                        color: appColor,
+                        borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(20),
                         ),
-                        children: [
-                          TableCell(
-                            child: Center(
+                      ),
+                      children: [
+                        TableCell(
+                          child: Padding(
+                            padding: EdgeInsets.only(
+                              top: 12.0,
+                            ),
+                            child: Align(
+                              alignment: Alignment.center,
                               child: Text(
                                 '#',
                                 style: TextStyle(
@@ -107,8 +124,14 @@ class _StorePageState extends State<StorePage> {
                               ),
                             ),
                           ),
-                          TableCell(
-                            child: Center(
+                        ),
+                        TableCell(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 12.0,
+                            ),
+                            child: Align(
+                              alignment: Alignment.center,
                               child: Text(
                                 'Product Name',
                                 style: TextStyle(
@@ -118,8 +141,15 @@ class _StorePageState extends State<StorePage> {
                               ),
                             ),
                           ),
-                          TableCell(
-                            child: Center(
+                        ),
+                        TableCell(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 12.0,
+                              // horizontal: 8.0,
+                            ),
+                            child: Align(
+                              alignment: Alignment.center,
                               child: Text(
                                 'Status',
                                 style: TextStyle(
@@ -129,10 +159,17 @@ class _StorePageState extends State<StorePage> {
                               ),
                             ),
                           ),
-                          TableCell(
-                            child: Center(
+                        ),
+                        TableCell(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 12.0,
+                              // horizontal: 8.0,
+                            ),
+                            child: Align(
+                              alignment: Alignment.center,
                               child: Text(
-                                'Qty',
+                                'QTY',
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.w700,
@@ -140,55 +177,66 @@ class _StorePageState extends State<StorePage> {
                               ),
                             ),
                           ),
-                        ],
-                      ),
-                      ...filteredDocs.asMap().entries.map((entry) {
-                        var index = entry.key;
-                        var doc = entry.value;
-                        var product = Product.fromSnap(doc);
+                        ),
+                      ],
+                    ),
+                    ...filteredDocs.asMap().entries.map((entry) {
+                      var index = entry.key;
+                      var doc = entry.value;
+                      var product = Product.fromSnap(doc);
 
-                        String statusText =
-                            product.quantity < 10 ? 'Low' : 'Active';
-                        Color statusColor =
-                            product.quantity < 10 ? Colors.red : Colors.green;
+                      String statusText =
+                          product.quantity < 10 ? 'Low' : 'Active';
+                      Color statusColor =
+                          product.quantity < 10 ? Colors.red : Colors.green;
 
-                        return TableRow(
-                          decoration: BoxDecoration(
-                            color: Colors.grey[200],
-                            border: Border(
-                              bottom: BorderSide(color: Colors.grey),
+                      return TableRow(
+                        decoration: BoxDecoration(
+                          color: Colors.grey[200],
+                          border: Border(
+                            bottom: BorderSide(color: Colors.grey),
+                          ),
+                        ),
+                        children: [
+                          TableCell(
+                            child: Center(
+                              child: Text('${index + 1}'),
                             ),
                           ),
-                          children: [
-                            TableCell(
-                              child: Center(
-                                child: Text('${index + 1}'),
+                          TableCell(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 12.0,
+                                horizontal: 8.0,
                               ),
-                            ),
-                            TableCell(
-                              child: Center(
-                                child: Text(product.productName),
-                              ),
-                            ),
-                            TableCell(
-                              child: Center(
+                              child: Align(
+                                alignment: Alignment.centerLeft,
                                 child: Text(
-                                  statusText,
-                                  style: TextStyle(color: statusColor),
+                                  product.productName,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
                                 ),
                               ),
                             ),
-                            TableCell(
-                              child: Center(
-                                child: Text('${product.quantity}'),
+                          ),
+                          TableCell(
+                            child: Center(
+                              child: Text(
+                                statusText,
+                                style: TextStyle(color: statusColor),
                               ),
                             ),
-                          ],
-                        );
-                      }).toList(),
-                    ],
-                  ),
-                ],
+                          ),
+                          TableCell(
+                            child: Center(
+                              child: Text('${product.quantity}'),
+                            ),
+                          ),
+                        ],
+                      );
+                    }).toList(),
+                  ],
+                ),
               ),
             ),
           );
