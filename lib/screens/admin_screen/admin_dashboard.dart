@@ -1,18 +1,79 @@
-import 'package:billyinventory/screens/admin_screen/admin_widgets/admin_custom_button.dart';
+import 'package:billyinventory/screens/admin_screen/admin_widgets/admin_custorm_drawer.dart';
 import 'package:billyinventory/screens/admin_screen/admin_widgets/admin_grey_container.dart';
-import 'package:billyinventory/common_widgets/my_custom_appbar.dart';
 import 'package:billyinventory/utils/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 
-class AdminDashboard extends StatelessWidget {
+class AdminDashboard extends StatefulWidget {
   const AdminDashboard({super.key});
 
   @override
+  State<AdminDashboard> createState() => _AdminDashboardState();
+}
+
+class _AdminDashboardState extends State<AdminDashboard> {
+  @override
   Widget build(BuildContext context) {
-    void displayDrawer() {}
     return Scaffold(
       backgroundColor: adminBackgroundColor,
-      appBar: myCustomAppbar(displayDrawer),
+      appBar: AppBar(
+        backgroundColor: adminBackgroundColor,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              'Billy Inventory',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 25,
+                color: appColor,
+              ),
+            ),
+            GestureDetector(
+              onTap: () {},
+              child: Stack(
+                children: [
+                  Icon(
+                    Icons.notifications,
+                    color: Colors.red,
+                    size: 33,
+                  ),
+                  Positioned(
+                    left: 10,
+                    top: 7,
+                    child: Container(
+                      width: 15,
+                      height: 15,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: Colors.black,
+                      ),
+                      child: Center(
+                        child: Text(
+                          '0',
+                          style: TextStyle(
+                            color: whiteColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 9,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(
+              width: 35,
+              height: 35,
+              child: SvgPicture.asset(
+                'assets/app_icon.svg',
+              ),
+            ),
+          ],
+        ),
+      ),
+      drawer: AdminNavBar(),
       body: SingleChildScrollView(
         child: SafeArea(
           child: Padding(
@@ -27,20 +88,14 @@ class AdminDashboard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text(
-                      'Dashboard',
-                      style:
-                          TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                      'A d m i n   D a s h b o a r d',
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        fontStyle: FontStyle.italic,
+                      ), 
                     ),
-                    CustomButtonGlobal(
-                      function: () {
-                        Navigator.of(context)
-                            .pushReplacementNamed('/adminproductscreen');
-                      },
-                      width: 95,
-                      height: 45,
-                      name: 'Filter',
-                      widgetName: Image.asset('assets/brush.png'),
-                    )
+                    Text(''),
                   ],
                 ),
                 const SizedBox(
@@ -49,7 +104,7 @@ class AdminDashboard extends StatelessWidget {
                 const AdmingreyContainer(
                   topIconPath: 'assets/admin_chart_icon.svg',
                   containerTitle: 'Total Products',
-                  rightContainerTile: '3,001',
+                  rightContainerTile: '189',
                   rightContainerIconPath:
                       'assets/right_container_arrow_icon.svg',
                   rigtContainerPercentage: '30%',
@@ -71,9 +126,9 @@ class AdminDashboard extends StatelessWidget {
                   height: 20,
                 ),
                 const AdmingreyContainer(
-                  topIconPath: 'assets/admin_card_tick_icon.svg',
-                  containerTitle: 'Total Order Paid',
-                  rightContainerTile: 'N3000',
+                  topIconPath: 'assets/addmin_shopping_cart_icon.svg',
+                  containerTitle: 'Total Sales',
+                  rightContainerTile: '₦20,000',
                   rightContainerIconPath:
                       'assets/right_container_arrow_icon.svg',
                   rigtContainerPercentage: '70%',
@@ -83,9 +138,9 @@ class AdminDashboard extends StatelessWidget {
                   height: 20,
                 ),
                 const AdmingreyContainer(
-                  topIconPath: 'assets/addmin_shopping_cart_icon.svg',
-                  containerTitle: 'Total Sales',
-                  rightContainerTile: 'N20,000',
+                  topIconPath: 'assets/admin_card_tick_icon.svg',
+                  containerTitle: 'Top-Selling Products',
+                  rightContainerTile: '45',
                   rightContainerIconPath:
                       'assets/right_container_arrow_icon.svg',
                   rigtContainerPercentage: '70%',

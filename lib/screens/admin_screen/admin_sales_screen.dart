@@ -2,17 +2,15 @@ import 'package:billyinventory/models/sales_model.dart';
 import 'package:billyinventory/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 
-class SalesDetailsPage extends StatefulWidget {
+class AdminSalesScreen extends StatefulWidget {
   @override
-  _SalesDetailsPageState createState() => _SalesDetailsPageState();
+  _AdminSalesScreenState createState() => _AdminSalesScreenState();
 }
 
-class _SalesDetailsPageState extends State<SalesDetailsPage> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+class _AdminSalesScreenState extends State<AdminSalesScreen> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final TextEditingController _searchController = TextEditingController();
   List<Sales> allSales = [];
@@ -42,11 +40,7 @@ class _SalesDetailsPageState extends State<SalesDetailsPage> {
   }
 
   Stream<List<Sales>> _salesStream() {
-    final user = _auth.currentUser;
-    if (user == null) return Stream.empty();
-
-    Query query =
-        _firestore.collection('sales').where('empId', isEqualTo: user.uid);
+    final query = _firestore.collection('sales');
 
     return query.snapshots().map((snapshot) {
       final sales = snapshot.docs.map((doc) => Sales.fromSnap(doc)).toList();
@@ -59,16 +53,6 @@ class _SalesDetailsPageState extends State<SalesDetailsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Text(
-      //     'Sales Details',
-      //     style: TextStyle(
-      //       color: whiteColor,
-      //       fontWeight: FontWeight.w700,
-      //     ),
-      //   ),
-      //   backgroundColor: appColor,
-      // ),
       appBar: AppBar(
         backgroundColor: appColor,
         title: Row(

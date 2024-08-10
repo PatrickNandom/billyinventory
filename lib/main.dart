@@ -2,8 +2,10 @@ import 'package:billyinventory/firebase_options.dart';
 import 'package:billyinventory/providers/card_provider.dart';
 import 'package:billyinventory/providers/user_provider.dart';
 import 'package:billyinventory/screens/admin_screen/admin_add_product_screen.dart';
+import 'package:billyinventory/screens/admin_screen/admin_edit_product_screen.dart';
 import 'package:billyinventory/screens/admin_screen/admin_product_preview_screen.dart';
-import 'package:billyinventory/screens/admin_screen/admin_product_screen.dart';
+import 'package:billyinventory/screens/admin_screen/admin_store_screen.dart';
+import 'package:billyinventory/screens/admin_screen/admin_view_product_details.dart';
 import 'package:billyinventory/screens/employee_screen/employee_card_screen.dart';
 import 'package:billyinventory/screens/employee_screen/employee_dashboard.dart';
 import 'package:billyinventory/screens/login_screen.dart';
@@ -39,8 +41,10 @@ class MyApp extends StatelessWidget {
           '/emplyeecardscreen': (context) => EmployeeCardScreen(),
           '/emplyeedashboard': (context) => EmployeeDashboard(),
           '/productpreview': (context) => ProductPreviewScreen(),
+          '/viewproductdetails': (context) => AdminViewProductDetails(),
+          '/editproduct': (context) => AdminEditProductScreen(),
           '/adminaddproductscreen': (context) => AddProductScreen(),
-          '/adminproductscreen': (context) => ProductScreen(),
+          '/adminstorescreen': (context) => StorePage(),
         },
       ),
     );

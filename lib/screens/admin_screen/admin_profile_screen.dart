@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:billyinventory/models/user_model.dart' as model;
-import 'package:billyinventory/screens/employee_screen/employee_dashboard.dart';
+import 'package:billyinventory/screens/admin_screen/admin_dashboard.dart';
 import 'package:billyinventory/screens/employee_screen/emplyee_widgets/employee_custom_button.dart';
 import 'package:billyinventory/screens/employee_screen/emplyee_widgets/employee_text_input.dart';
 import 'package:billyinventory/services/storage_service.dart';
@@ -11,18 +11,18 @@ import 'package:billyinventory/utils/snachbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
 
-class EmployeeSettingsScreen extends StatefulWidget {
-  const EmployeeSettingsScreen({super.key});
+class AdminProfileScreen extends StatefulWidget {
+  const AdminProfileScreen({super.key});
 
   @override
-  State<EmployeeSettingsScreen> createState() => _EmployeeSettingsScreenState();
+  State<AdminProfileScreen> createState() => _AdminProfileScreenState();
 }
 
-class _EmployeeSettingsScreenState extends State<EmployeeSettingsScreen> {
+class _AdminProfileScreenState extends State<AdminProfileScreen> {
   // Text editing controllers
   final _nameController = TextEditingController();
   final _confirmNameController = TextEditingController();
@@ -31,8 +31,6 @@ class _EmployeeSettingsScreenState extends State<EmployeeSettingsScreen> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   Uint8List? _profileImage;
-
-  //dispose functions
 
   @override
   void dispose() {
@@ -172,7 +170,6 @@ class _EmployeeSettingsScreenState extends State<EmployeeSettingsScreen> {
       return Center(child: Text('No user logged in'));
     }
     final userId = currentUser.uid;
-
     double btnWidth = MediaQuery.of(context).size.width;
     double theWidth = btnWidth > 500 ? 241 : btnWidth * 0.8;
     return Scaffold(
@@ -186,7 +183,7 @@ class _EmployeeSettingsScreenState extends State<EmployeeSettingsScreen> {
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => const EmployeeDashboard(),
+                    builder: (context) => const AdminDashboard(),
                   ),
                 );
               },
@@ -289,6 +286,8 @@ class _EmployeeSettingsScreenState extends State<EmployeeSettingsScreen> {
                     children: [
                       Text(
                         user.name,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,

@@ -48,19 +48,22 @@ class _EmployeeCardScreenState extends State<EmployeeCardScreen> {
     final empName = user.displayName ?? 'Unknown';
 
     try {
+      //Loop to iterate on each item in the card and update the product quantity in firestore
       for (final item in cartItems) {
-        // Update product quantity
         final productRef =
             _firestore.collection('products').doc(item.productID);
         final productSnap = await productRef.get();
         final product = Product.fromSnap(productSnap);
         final newQuantity = product.quantity - item.quantity;
+       
         if (newQuantity < 0) {
           throw Exception(
               'Insufficient quantity for product ${item.productName}');
         }
         await productRef.update({'quantity': newQuantity});
       }
+      //End of Loop to iterate on each item in the card and update the product quantity in firestore
+
       // geting the total quantity
       int totlalQuantity = 0;
       cartItems.forEach(
@@ -69,7 +72,7 @@ class _EmployeeCardScreenState extends State<EmployeeCardScreen> {
         },
       );
 
-      print('Total qty$totlalQuantity');
+      //Handling sales record
       final salesId = Uuid().v4();
       final sale = Sales(
         saleId: salesId,
@@ -80,11 +83,11 @@ class _EmployeeCardScreenState extends State<EmployeeCardScreen> {
         empName: empName,
         salesDate: DateTime.now(),
       );
-
       await _firestore.collection('sales').doc(salesId).set(sale.toJson());
-      showSnackBar(context, 'New sales record created sucessfully');
       Navigator.pop(context);
       cartProvider.clearCart();
+      showSnackBar(context, 'New sales record created sucessfully');
+      //End of handling sales details
     } catch (e) {
       showSnackBar(context, 'Error processing sale: $e');
     }

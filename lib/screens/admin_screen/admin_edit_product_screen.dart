@@ -10,14 +10,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 
-class AddProductScreen extends StatefulWidget {
-  const AddProductScreen({super.key});
+class AdminEditProductScreen extends StatefulWidget {
+  const AdminEditProductScreen({super.key});
 
   @override
-  State<AddProductScreen> createState() => _AddProductScreenState();
+  State<AdminEditProductScreen> createState() => _AdminEditProductScreenState();
 }
 
-class _AddProductScreenState extends State<AddProductScreen> {
+class _AdminEditProductScreenState extends State<AdminEditProductScreen> {
   final productKeyController = TextEditingController();
   final productNameController = TextEditingController();
   final productCostPriceController = TextEditingController();
@@ -91,6 +91,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
   @override
   Widget build(BuildContext context) {
+    //getting data from previous page
+    // final Product prodData =
+    //     ModalRoute.of(context)!.settings.arguments as Product;
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: adminBackgroundColor,
@@ -128,7 +131,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text(
-                      'Add Product',
+                      'Edit Products',
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 17.0,

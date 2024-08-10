@@ -1,65 +1,26 @@
-import 'dart:typed_data';
-
-import 'package:billyinventory/common_widgets/my_custom_button.dart';
+import 'package:billyinventory/models/products_model.dart';
 import 'package:billyinventory/screens/admin_screen/admin_widgets/admin_custom_button.dart';
-import 'package:billyinventory/services/firestore_services.dart';
 import 'package:billyinventory/utils/colors.dart';
-import 'package:billyinventory/utils/show_progress_indicator.dart';
-import 'package:billyinventory/utils/snachbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
-class ProductPreviewScreen extends StatefulWidget {
-  const ProductPreviewScreen({super.key});
+class AdminViewProductDetails extends StatefulWidget {
+  const AdminViewProductDetails({super.key});
 
   @override
-  State<ProductPreviewScreen> createState() => _ProductPreviewScreenState();
+  State<AdminViewProductDetails> createState() =>
+      _AdminViewProductDetailsState();
 }
 
-class _ProductPreviewScreenState extends State<ProductPreviewScreen> {
-  Map<String, dynamic>? data;
-
+class _AdminViewProductDetailsState extends State<AdminViewProductDetails> {
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final args = ModalRoute.of(context)!.settings.arguments;
-    if (args != null && args is Map<String, dynamic>) {
-      data = args;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    if (data == null) {
-      return Scaffold(
-        backgroundColor: adminBackgroundColor,
-        body: Center(child: Text('No product data provided')),
-      );
-    }
+    final Product prodData =
+        ModalRoute.of(context)!.settings.arguments as Product;
 
-    Future<void> _addProduct() async {
-      try {
-        showProgressIndicator(context);
-
-        await FirestoreService().addProduct(
-          data!['productKey'],
-          data!['productName'],
-          data!['productImage'],
-          data!['productDescription'],
-          data!['productCategory'],
-          data!['productCostPrice'],
-          data!['productSellingPrice'],
-          data!['productQuantity'],
-        );
-        Navigator.pop(context);
-        showSnackBar(context, 'Product details saved successfully');
-        Navigator.of(context).pushReplacementNamed('/adminaddproductscreen');
-      } catch (e) {
-        print('Error picking image: $e');
-        Navigator.pop(context);
-        showSnackBar(context, 'Custom Error ${e.toString()}');
-      }
-    }
+    String statusText = prodData.quantity < 10 ? 'Low' : 'Active';
+    Color statusColor = prodData.quantity < 10 ? Colors.red : Colors.green;
 
     return Scaffold(
       backgroundColor: adminBackgroundColor,
@@ -99,7 +60,7 @@ class _ProductPreviewScreenState extends State<ProductPreviewScreen> {
                     CustomButtonGlobal(
                       function: () {
                         Navigator.of(context)
-                            .pushReplacementNamed('/adminaddproductscreen');
+                            .pushReplacementNamed('/adminstorescreen');
                       },
                       width: 100,
                       height: 45,
@@ -107,7 +68,7 @@ class _ProductPreviewScreenState extends State<ProductPreviewScreen> {
                       widgetName: Icon(Icons.arrow_back),
                     ),
                     Text(
-                      'Product preview',
+                      'Product Details',
                       style: TextStyle(
                           fontWeight: FontWeight.w700,
                           fontSize: 25,
@@ -128,28 +89,6 @@ class _ProductPreviewScreenState extends State<ProductPreviewScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Product Information',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 15.0,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          CustomButton(
-                            backgroundColor: myGreenColor,
-                            boderWidth: 2,
-                            btnWidth: 60.0,
-                            borderColor: myGreenColor,
-                            text: 'Save',
-                            textColor: whiteColor,
-                            function: _addProduct,
-                          ),
-                        ],
-                      ),
                       SizedBox(
                         height: 20.0,
                       ),
@@ -162,16 +101,12 @@ class _ProductPreviewScreenState extends State<ProductPreviewScreen> {
                         ),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(16.0),
-                          child: data!['productImage'] != null
-                              ? Image.memory(
-                                  data!['productImage'] as Uint8List,
-                                  fit: BoxFit.cover,
-                                  width: double.infinity,
-                                  height: double.infinity,
-                                )
-                              : Center(
-                                  child: Text("No immage"),
-                                ),
+                          child: Image(
+                            image: NetworkImage(
+                              prodData.productImage,
+                            ),
+                            fit: BoxFit.cover,
+                          ),
                         ),
                       ),
                       SizedBox(
@@ -182,7 +117,7 @@ class _ProductPreviewScreenState extends State<ProductPreviewScreen> {
                         height: 5.0,
                       ),
                       Text(
-                        data!['productName'] as String,
+                        prodData.productName.toString(),
                         style: TextStyle(
                           fontWeight: FontWeight.w700,
                           fontSize: 16.0,
@@ -206,7 +141,7 @@ class _ProductPreviewScreenState extends State<ProductPreviewScreen> {
                                 height: 5.0,
                               ),
                               Text(
-                                '₦${data!['productCostPrice']}',
+                                '₦${prodData.costPrice}',
                                 style: TextStyle(
                                   fontWeight: FontWeight.w700,
                                   fontSize: 16.0,
@@ -222,7 +157,7 @@ class _ProductPreviewScreenState extends State<ProductPreviewScreen> {
                                 height: 5.0,
                               ),
                               Text(
-                                '₦${data!['productSellingPrice']}',
+                                '₦${prodData.sellingPrice}',
                                 style: TextStyle(
                                   fontWeight: FontWeight.w700,
                                   fontSize: 16.0,
@@ -249,14 +184,9 @@ class _ProductPreviewScreenState extends State<ProductPreviewScreen> {
                               SizedBox(
                                 height: 5.0,
                               ),
-                              CustomButton(
-                                backgroundColor: Colors.transparent,
-                                boderWidth: 2,
-                                btnWidth: 70.0,
-                                borderColor: myGreenColor,
-                                text: 'Active',
-                                textColor: myGreenColor,
-                                function: () {},
+                              Text(
+                                statusText,
+                                style: TextStyle(color: statusColor),
                               ),
                             ],
                           ),
@@ -265,7 +195,8 @@ class _ProductPreviewScreenState extends State<ProductPreviewScreen> {
                             children: [
                               Text('Product Key'),
                               Text(
-                                data!['productKey'].toString(),
+                                '',
+                                overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                   fontWeight: FontWeight.w700,
                                   fontSize: 16.0,
@@ -296,7 +227,7 @@ class _ProductPreviewScreenState extends State<ProductPreviewScreen> {
                                 height: 5.0,
                               ),
                               Text(
-                                data!['productCategory'].toString(),
+                                prodData.category,
                                 style: TextStyle(
                                   fontWeight: FontWeight.w700,
                                   fontSize: 16.0,
@@ -312,7 +243,7 @@ class _ProductPreviewScreenState extends State<ProductPreviewScreen> {
                                 height: 5.0,
                               ),
                               Text(
-                                data!['productQuantity'].toString(),
+                                prodData.quantity.toString(),
                                 style: TextStyle(
                                   fontWeight: FontWeight.w700,
                                   fontSize: 16.0,
@@ -349,9 +280,7 @@ class _ProductPreviewScreenState extends State<ProductPreviewScreen> {
                       SizedBox(
                         height: 8.0,
                       ),
-                      Text(
-                        data!['productDescription'].toString(),
-                      ),
+                      Text(prodData.description),
                     ],
                   ),
                 ),

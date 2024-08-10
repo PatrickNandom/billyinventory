@@ -152,7 +152,7 @@ class _LoginState extends State<Login> {
                       TextButton(
                         onPressed: () {},
                         child: const Text(
-                          'Forgoten password?',
+                          'Forgotten password?',
                           style: TextStyle(color: Colors.black),
                         ),
                       ),

@@ -1,11 +1,12 @@
 import 'package:billyinventory/common_widgets/my_custom_search_bar.dart';
+import 'package:billyinventory/models/user_model.dart' as model;
 import 'package:billyinventory/providers/card_provider.dart';
-import 'package:billyinventory/providers/user_provider.dart';
 import 'package:billyinventory/screens/employee_screen/employee_profile_screen.dart';
 import 'package:billyinventory/screens/employee_screen/emplyee_widgets/employee_custom_drawer.dart';
 import 'package:billyinventory/screens/employee_screen/emplyee_widgets/employee_product_card.dart';
 import 'package:billyinventory/utils/colors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -46,51 +47,77 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
 
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<UserProvider>(context).getUser;
+    // final user = Provider.of<UserProvider>(context).getUser;
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null) {
+      // Handle the case where there is no authenticated user
+      return Center(child: Text('No user logged in'));
+    }
+    final userId = currentUser.uid;
 
     return Scaffold(
       appBar: AppBar(
         backgroundColor: adminBackgroundColor,
-        title: Row(
-          children: [
-            Spacer(flex: 1),
-            Text(
-              'Billy Inventory',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 25,
-                color: appColor,
-              ),
-            ),
-            Spacer(flex: 1),
-            GestureDetector(
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const EmployeeSettingsScreen(),
-                  ),
-                );
-              },
-              child: Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: whiteColor,
-                  border: Border.all(
-                    width: 2,
+        title: StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('users')
+              .doc(userId)
+              .snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            }
+            if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            }
+            if (!snapshot.hasData || !snapshot.data!.exists) {
+              return Center(child: Text('User not found'));
+            }
+
+            // Use the User model to handle data
+            model.User user = model.User.fromSnap(snapshot.data!);
+            return Row(
+              children: [
+                Spacer(flex: 1),
+                Text(
+                  'Billy Inventory',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 25,
                     color: appColor,
                   ),
-                  shape: BoxShape.circle,
                 ),
-                child: ClipOval(
-                  child: Image.network(
-                    user!.profileImage,
-                    fit: BoxFit.cover,
+                Spacer(flex: 1),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const EmployeeSettingsScreen(),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: whiteColor,
+                      border: Border.all(
+                        width: 2,
+                        color: appColor,
+                      ),
+                      shape: BoxShape.circle,
+                    ),
+                    child: ClipOval(
+                      child: Image.network(
+                        user.profileImage,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ),
-          ],
+              ],
+            );
+          },
         ),
       ),
       drawer: NavBar(),
@@ -216,7 +243,7 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
                                 product['sellingPrice'],
                                 product['productImage'],
                               );
-                              setState(() {}); // Update UI without refresh
+                              // setState(() {}); // Update UI without refresh
                             },
                           );
                         },

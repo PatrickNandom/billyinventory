@@ -89,9 +89,10 @@ class AdmingreyContainer extends StatelessWidget {
                   children: [
                     Text(
                       rightContainerTile,
+                      overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                     Container(
@@ -115,7 +116,9 @@ class AdmingreyContainer extends StatelessWidget {
                           Text(
                             rigtContainerPercentage,
                             style: const TextStyle(
-                                fontSize: 9, fontWeight: FontWeight.bold),
+                              fontSize: 9,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ],
                       ),
