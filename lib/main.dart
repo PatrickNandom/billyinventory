@@ -4,6 +4,7 @@ import 'package:billyinventory/providers/user_provider.dart';
 import 'package:billyinventory/screens/admin_screen/admin_add_product_screen.dart';
 import 'package:billyinventory/screens/admin_screen/admin_edit_product_screen.dart';
 import 'package:billyinventory/screens/admin_screen/admin_product_preview_screen.dart';
+import 'package:billyinventory/screens/admin_screen/admin_sales_details_screen.dart';
 import 'package:billyinventory/screens/admin_screen/admin_store_screen.dart';
 import 'package:billyinventory/screens/admin_screen/admin_view_product_details.dart';
 import 'package:billyinventory/screens/employee_screen/employee_card_screen.dart';
@@ -45,6 +46,7 @@ class MyApp extends StatelessWidget {
           '/editproduct': (context) => AdminEditProductScreen(),
           '/adminaddproductscreen': (context) => AddProductScreen(),
           '/adminstorescreen': (context) => StorePage(),
+          '/adminsalesdetailscreen': (context) => AdminSalesDetailScreen(),
         },
       ),
     );

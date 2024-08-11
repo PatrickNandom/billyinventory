@@ -13,13 +13,6 @@ class _StorePageState extends State<StorePage> {
   final _firestoreService = FirestoreService();
   String searchQuery = '';
 
-  // Future<void> _deleteProduct(String productId) async {
-  //   await FirebaseFirestore.instance
-  //       .collection('products')
-  //       .doc(productId)
-  //       .delete();
-  // }
-
   void _showActions(BuildContext context, Product product) {
     showMenu(
       context: context,

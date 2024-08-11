@@ -33,8 +33,10 @@ class _AdminSalesScreenState extends State<AdminSalesScreen> {
     final query = _searchController.text.toLowerCase();
     setState(() {
       filteredSales = allSales.where((sale) {
-        final formattedDate = DateFormat('yyyy-MM-dd').format(sale.salesDate);
-        return formattedDate.contains(query);
+        // final formattedDate = DateFormat('yyyy-MM-dd').format(sale.salesDate);
+        // return formattedDate.contains(query);
+        final empSale = sale.empName;
+        return empSale.contains(query);
       }).toList();
     });
   }
@@ -84,7 +86,7 @@ class _AdminSalesScreenState extends State<AdminSalesScreen> {
             TextField(
               controller: _searchController,
               decoration: InputDecoration(
-                hintText: 'Search by Date (yyyy-mm-dd)',
+                hintText: 'Search by employee name',
                 prefixIcon: Icon(Icons.search),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8.0),
@@ -130,11 +132,17 @@ class _AdminSalesScreenState extends State<AdminSalesScreen> {
                               SizedBox(height: 8.0),
                               Text('Total Items: ${sale.totalItems}'),
                               Text(
-                                  'Total Price: ₦${sale.totalPrice.toStringAsFixed(2)}'),
+                                'Total Price: ₦${sale.totalPrice.toStringAsFixed(2)}',
+                              ),
                             ],
                           ),
                           trailing: Icon(Icons.arrow_forward),
-                          onTap: () {},
+                          onTap: () {
+                            Navigator.of(context).pushNamed(
+                              '/adminsalesdetailscreen',
+                              arguments: sale,
+                            );
+                          },
                         ),
                       );
                     },
