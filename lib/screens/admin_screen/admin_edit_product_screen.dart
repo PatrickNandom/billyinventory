@@ -1,11 +1,15 @@
 import 'dart:typed_data';
 
 import 'package:billyinventory/common_widgets/my_custom_button.dart';
+import 'package:billyinventory/models/products_model.dart';
 import 'package:billyinventory/screens/admin_screen/admin_widgets/admin_custom_text_input.dart';
 import 'package:billyinventory/screens/admin_screen/admin_widgets/admin_text_input_style.dart';
+import 'package:billyinventory/services/firestore_services.dart';
+import 'package:billyinventory/services/storage_service.dart';
 import 'package:billyinventory/utils/colors.dart';
 import 'package:billyinventory/utils/show_progress_indicator.dart';
 import 'package:billyinventory/utils/snachbar.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
@@ -27,6 +31,21 @@ class _AdminEditProductScreenState extends State<AdminEditProductScreen> {
   final productDescriptionController = TextEditingController();
 
   Uint8List? _productImage;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Getting data from the previous page
+    final Product prodData =
+        ModalRoute.of(context)!.settings.arguments as Product;
+    productKeyController.text = prodData.productId.toString();
+    productNameController.text = prodData.productName;
+    productCostPriceController.text = prodData.costPrice.toString();
+    productSellingPriceController.text = prodData.sellingPrice.toString();
+    productQuantityController.text = prodData.quantity.toString();
+    producCategoryController.text = prodData.category;
+    productDescriptionController.text = prodData.description;
+  }
 
   @override
   void dispose() {
@@ -52,48 +71,57 @@ class _AdminEditProductScreenState extends State<AdminEditProductScreen> {
     }
   }
 
-  void validation() {
-    showProgressIndicator(context);
-
-    if (productKeyController.text.isEmpty ||
-        productNameController.text.isEmpty ||
-        productCostPriceController.text.isEmpty ||
-        productSellingPriceController.text.isEmpty ||
-        productQuantityController.text.isEmpty ||
-        producCategoryController.text.isEmpty ||
-        productDescriptionController.text.isEmpty) {
-      Navigator.pop(context);
-      showSnackBar(context, 'Please fill in all fields and upload an image.');
-      return;
-    }
-
-    if (_productImage == null || _productImage!.isEmpty) {
-      Navigator.pop(context);
-      showSnackBar(context, 'Please select an image.');
-      return;
-    }
-
-    Navigator.pushReplacementNamed(
-      context,
-      '/productpreview',
-      arguments: {
-        'productKey': productKeyController.text,
-        'productName': productNameController.text,
-        'productImage': _productImage!,
-        'productDescription': productDescriptionController.text,
-        'productCategory': producCategoryController.text,
-        'productCostPrice': double.parse(productCostPriceController.text),
-        'productSellingPrice': double.parse(productSellingPriceController.text),
-        'productQuantity': int.parse(productQuantityController.text),
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    //getting data from previous page
-    // final Product prodData =
-    //     ModalRoute.of(context)!.settings.arguments as Product;
+    //function to update product
+    Future<void> _updateProduct() async {
+      showProgressIndicator(context);
+      final Product _product =
+          ModalRoute.of(context)!.settings.arguments as Product;
+      try {
+        final firestoreService = FirestoreService();
+
+        String? imageUrl;
+        if (_productImage != null) {
+          imageUrl = await FirebaseStorageService().uploadImage(
+              _productImage!, 'Product Image ${_product.productId}');
+        } else {
+          imageUrl = _product.productImage;
+        }
+
+        final updatedProduct = Product(
+          productId: _product.productId,
+          productName: productNameController.text.isEmpty
+              ? _product.productName
+              : productNameController.text,
+          productImage: imageUrl,
+          description: productDescriptionController.text.isEmpty
+              ? _product.description
+              : productDescriptionController.text,
+          category: producCategoryController.text.isEmpty
+              ? _product.category
+              : producCategoryController.text,
+          costPrice: productCostPriceController.text.isEmpty
+              ? _product.costPrice
+              : double.parse(productCostPriceController.text),
+          sellingPrice: productSellingPriceController.text.isEmpty
+              ? _product.sellingPrice
+              : double.parse(productSellingPriceController.text),
+          quantity: productQuantityController.text.isEmpty
+              ? _product.quantity
+              : int.parse(productQuantityController.text),
+          createdAt: DateTime.now(),
+        );
+
+        await firestoreService.updateProduct(updatedProduct);
+        Navigator.of(context).pop();
+        showSnackBar(context, 'Product data updated successfully!');
+      } catch (e) {
+        showSnackBar(context, 'Error updating product: $e');
+      }
+    }
+
+    //end of fuction to update product
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: adminBackgroundColor,
@@ -131,7 +159,7 @@ class _AdminEditProductScreenState extends State<AdminEditProductScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text(
-                      'Edit Products',
+                      'Edit Product',
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 17.0,
@@ -404,10 +432,10 @@ class _AdminEditProductScreenState extends State<AdminEditProductScreen> {
                     const SizedBox(height: 25.0),
                     Center(
                       child: CustomButton(
-                        function: validation,
+                        function: _updateProduct,
                         backgroundColor: Colors.transparent,
                         borderColor: myGreenColor,
-                        text: 'Next',
+                        text: 'Update Product',
                         textColor: myGreenColor,
                         boderWidth: 2,
                       ),
@@ -422,3 +450,44 @@ class _AdminEditProductScreenState extends State<AdminEditProductScreen> {
     );
   }
 }
+
+
+
+
+
+// void validation() {
+//   showProgressIndicator(context);
+
+//   if (productKeyController.text.isEmpty ||
+//       productNameController.text.isEmpty ||
+//       productCostPriceController.text.isEmpty ||
+//       productSellingPriceController.text.isEmpty ||
+//       productQuantityController.text.isEmpty ||
+//       producCategoryController.text.isEmpty ||
+//       productDescriptionController.text.isEmpty) {
+//     Navigator.pop(context);
+//     showSnackBar(context, 'Please fill in all fields and upload an image.');
+//     return;
+//   }
+
+//   if (_productImage == null || _productImage!.isEmpty) {
+//     Navigator.pop(context);
+//     showSnackBar(context, 'Please select an image.');
+//     return;
+//   }
+
+//   Navigator.pushReplacementNamed(
+//     context,
+//     '/productpreview',
+//     arguments: {
+//       'productKey': productKeyController.text,
+//       'productName': productNameController.text,
+//       'productImage': _productImage!,
+//       'productDescription': productDescriptionController.text,
+//       'productCategory': producCategoryController.text,
+//       'productCostPrice': double.parse(productCostPriceController.text),
+//       'productSellingPrice': double.parse(productSellingPriceController.text),
+//       'productQuantity': int.parse(productQuantityController.text),
+//     },
+//   );
+// }

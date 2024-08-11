@@ -48,6 +48,7 @@ class _LoginState extends State<Login> {
       User? user = await _authService.signInUser(
           _emailController.text, _passwordController.text);
       Navigator.pop(context);
+
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => DashboardPage(user: user)),

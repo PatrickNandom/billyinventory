@@ -219,7 +219,6 @@ class _AdminProfileScreenState extends State<AdminProfileScreen> {
               child: Text('User not found'),
             );
           }
-
           model.User user = model.User.fromSnap(snapshot.data!);
           return Column(
             children: [
