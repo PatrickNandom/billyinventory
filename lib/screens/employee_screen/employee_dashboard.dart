@@ -47,7 +47,6 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
 
   @override
   Widget build(BuildContext context) {
-    // final user = Provider.of<UserProvider>(context).getUser;
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser == null) {
       // Handle the case where there is no authenticated user

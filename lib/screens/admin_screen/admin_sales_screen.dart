@@ -13,8 +13,8 @@ class AdminSalesScreen extends StatefulWidget {
 class _AdminSalesScreenState extends State<AdminSalesScreen> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final TextEditingController _searchController = TextEditingController();
-  List<Sales> allSales = [];
-  List<Sales> filteredSales = [];
+  List<QueryDocumentSnapshot> allSales = [];
+  List<QueryDocumentSnapshot> filteredSales = [];
 
   @override
   void initState() {
@@ -33,22 +33,9 @@ class _AdminSalesScreenState extends State<AdminSalesScreen> {
     final query = _searchController.text.toLowerCase();
     setState(() {
       filteredSales = allSales.where((sale) {
-        // final formattedDate = DateFormat('yyyy-MM-dd').format(sale.salesDate);
-        // return formattedDate.contains(query);
-        final empSale = sale.empName;
-        return empSale.contains(query);
+        final empName = sale['empName'].toString().toLowerCase();
+        return empName.contains(query);
       }).toList();
-    });
-  }
-
-  Stream<List<Sales>> _salesStream() {
-    final query = _firestore.collection('sales');
-
-    return query.snapshots().map((snapshot) {
-      final sales = snapshot.docs.map((doc) => Sales.fromSnap(doc)).toList();
-      allSales = sales;
-      filteredSales = sales;
-      return sales;
     });
   }
 
@@ -96,8 +83,8 @@ class _AdminSalesScreenState extends State<AdminSalesScreen> {
             SizedBox(height: 16),
             // Sales List
             Expanded(
-              child: StreamBuilder<List<Sales>>(
-                stream: _salesStream(),
+              child: StreamBuilder<QuerySnapshot>(
+                stream: _firestore.collection('sales').snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(child: CircularProgressIndicator());
@@ -105,15 +92,26 @@ class _AdminSalesScreenState extends State<AdminSalesScreen> {
                   if (snapshot.hasError) {
                     return Center(child: Text('Error: ${snapshot.error}'));
                   }
-                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                     return Center(child: Text('No sales found.'));
                   }
-                  final sales = filteredSales;
+
+                  // Update the list of all sales whenever new data is received
+                  allSales = snapshot.data!.docs;
+
+                  // Re-apply the filter to the updated list of sales
+                  filteredSales = allSales.where((sale) {
+                    final empName = sale['empName'].toString().toLowerCase();
+                    return empName
+                        .contains(_searchController.text.toLowerCase());
+                  }).toList();
 
                   return ListView.builder(
-                    itemCount: sales.length,
+                    itemCount: filteredSales.length,
                     itemBuilder: (context, index) {
-                      final sale = sales[index];
+                      final saleDoc = filteredSales[index];
+                      final sale = Sales.fromSnap(saleDoc);
+
                       return Card(
                         margin: EdgeInsets.symmetric(vertical: 8.0),
                         shape: RoundedRectangleBorder(

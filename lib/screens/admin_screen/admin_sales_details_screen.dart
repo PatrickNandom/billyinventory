@@ -1,5 +1,3 @@
-
-
 import 'package:billyinventory/models/sales_model.dart';
 import 'package:billyinventory/screens/admin_screen/admin_widgets/admin_sales_row.dart';
 import 'package:billyinventory/utils/colors.dart';

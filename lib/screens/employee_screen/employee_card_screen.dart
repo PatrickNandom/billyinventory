@@ -55,7 +55,7 @@ class _EmployeeCardScreenState extends State<EmployeeCardScreen> {
         final productSnap = await productRef.get();
         final product = Product.fromSnap(productSnap);
         final newQuantity = product.quantity - item.quantity;
-       
+
         if (newQuantity < 0) {
           throw Exception(
               'Insufficient quantity for product ${item.productName}');
@@ -227,7 +227,8 @@ class _EmployeeCardScreenState extends State<EmployeeCardScreen> {
                       Text('Payment Details'),
                       Text('Total Items: ${cartItems.length}'),
                       Text(
-                          'Total Amount: ₦${cartProvider.totalAmount.toStringAsFixed(2)}'),
+                        'Total Amount: ₦${cartProvider.totalAmount.toStringAsFixed(2)}',
+                      ),
                       SizedBox(height: 20.0),
                       CustomButton(
                         backgroundColor: appColor.withOpacity(0.7),
